@@ -1,12 +1,6 @@
 function Login(){
 return (
-    <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8"
-       style={{
-          backgroundImage: 'url(/login_background.png)', // This will now work!
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          minHeight: '100vh'
-        }}>
+    <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <img
             alt=""
