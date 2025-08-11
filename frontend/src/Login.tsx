@@ -1,11 +1,6 @@
-import Login from "./Login"
-
-function App() {
-  // const [count, setCount] = useState(0)
-
-  return (
-    <>
-       <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8"
+function Login(){
+return (
+    <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8"
        style={{
           backgroundImage: 'url(/login_background.png)', // This will now work!
           backgroundSize: 'cover',
@@ -90,8 +85,8 @@ function App() {
           </p>
         </div>
       </div>
-    </>
-  )
+                );
 }
 
-export default App
+
+export default Login
