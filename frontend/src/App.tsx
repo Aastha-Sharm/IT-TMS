@@ -10,6 +10,7 @@ import Header from "./components/Header";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
 import Home from "./components/Home";
+import Footer from "./components/Footer";  // import Footer
 
 const PrivateRoute = ({ children }: { children: ReactNode }) => {
   const token = localStorage.getItem("token");
@@ -28,20 +29,31 @@ const App: React.FC = () => {
 
   return (
     <Router>
-      {token && <Header setToken={setToken} />}
-      <Routes>
-        <Route path="/login" element={<Login setToken={setToken} />} />
-        <Route path="/signup" element={<Signup setToken={setToken} />} />
-        <Route
-          path="/"
-          element={
-            <PrivateRoute>
-              <Home />
-            </PrivateRoute>
-          }
-        />
-        <Route path="*" element={<Navigate to={token ? "/" : "/login"} />} />
-      </Routes>
+      {/* Flex container to enable sticky footer */}
+      <div className="flex flex-col min-h-screen">
+        {/* Header shown only if logged in */}
+        {token && <Header setToken={setToken} />}
+        
+        {/* Main content grows to fill remaining space */}
+        <main className="flex-grow">
+          <Routes>
+            <Route path="/login" element={<Login setToken={setToken} />} />
+            <Route path="/signup" element={<Signup setToken={setToken} />} />
+            <Route
+              path="/"
+              element={
+                <PrivateRoute>
+                  <Home />
+                </PrivateRoute>
+              }
+            />
+            <Route path="*" element={<Navigate to={token ? "/" : "/login"} />} />
+          </Routes>
+        </main>
+
+        {/* Sticky Footer shown only if logged in */}
+        {token && <Footer />}
+      </div>
     </Router>
   );
 };
