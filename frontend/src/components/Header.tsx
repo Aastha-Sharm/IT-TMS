@@ -195,13 +195,13 @@ export default function Navbar({ setToken }: NavbarProps) {
           <button className="flex items-center px-4 py-2 hover:bg-gray-100 w-full">
             <FaEnvelope className="mr-2" /> Messages
             <span className="ml-auto bg-red-500 text-white text-xs px-2 rounded-full">
-              4
+              
             </span>
           </button>
           <button className="flex items-center px-4 py-2 hover:bg-gray-100 w-full">
             <FaBell className="mr-2" /> Notifications
             <span className="ml-auto bg-red-500 text-white text-xs px-2 rounded-full">
-              17
+              
             </span>
           </button>
           <button
