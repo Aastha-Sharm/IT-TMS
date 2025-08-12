@@ -98,7 +98,7 @@ export default function Navbar({ setToken }: NavbarProps) {
           <button className="relative">
             <FaEnvelope className="text-xl" />
             <span className="absolute -top-1 -right-2 bg-red-500 text-xs px-1 rounded-full">
-              4
+              
             </span>
           </button>
 
@@ -113,7 +113,7 @@ export default function Navbar({ setToken }: NavbarProps) {
           >
             <FaBell className="text-xl" />
             <span className="absolute -top-1 -right-2 bg-red-500 text-xs px-1 rounded-full">
-              17
+              
             </span>
           </button>
 

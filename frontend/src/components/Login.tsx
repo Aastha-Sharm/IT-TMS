@@ -30,8 +30,6 @@ function Login({ setToken }: LoginProps) {
       // Update token state in App
       setToken(response.data.access_token);
 
-      alert("Login successful!");
-
       // Redirect to home page
       navigate("/");
     } catch (error: any) {
