@@ -6,7 +6,7 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
-import Navbar from "./components/Header";
+import Header from "./components/Header";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
 import Home from "./components/Home";
@@ -28,7 +28,7 @@ const App: React.FC = () => {
 
   return (
     <Router>
-      {token && <Navbar setToken={setToken} />}
+      {token && <Header setToken={setToken} />}
       <Routes>
         <Route path="/login" element={<Login setToken={setToken} />} />
         <Route path="/signup" element={<Signup setToken={setToken} />} />
