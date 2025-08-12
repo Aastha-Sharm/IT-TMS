@@ -76,7 +76,7 @@ export default function Navbar({ setToken }: NavbarProps) {
               </button>
               <button
                 onClick={handleLogout}
-                className="block px-4 py-2 hover:bg-gray-100 w-full text-left flex items-center gap-2"
+                className="flex px-4 py-2 hover:bg-gray-100 w-full text-left items-center gap-2"
               >
                 <FaSignOutAlt /> Logout
               </button>
