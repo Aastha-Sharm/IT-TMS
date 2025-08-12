@@ -30,13 +30,7 @@ export default function Navbar({ setToken }: NavbarProps) {
     <nav className="bg-blue-500 text-white shadow-md">
       <div className="flex items-center justify-between px-4 py-2">
         <div className="flex items-center gap-4">
-          <button
-            className="text-xl"
-            onClick={() => {
-              setSideMenuOpen(true);
-              setNotificationOpen(false);
-            }}
-          >
+          <button className="text-xl">
             <FaBars />
           </button>
           <img
@@ -60,48 +54,15 @@ export default function Navbar({ setToken }: NavbarProps) {
               4
             </span>
           </button>
-
-          {/* Notification Bell */}
-          <button
-            className="relative"
-            onClick={() => {
-              setNotificationOpen(!isNotificationOpen);
-              setProfileMenuOpen(false);
-            }}
-          >
+          <button className="relative">
             <FaBell className="text-xl" />
             <span className="absolute -top-1 -right-2 bg-red-500 text-xs px-1 rounded-full">
               17
             </span>
           </button>
-
-          {/* Notification Dropdown */}
-          {isNotificationOpen && (
-            <div className="absolute right-16 top-14 bg-white text-black rounded shadow-lg w-64">
-              <h3 className="font-semibold px-4 py-2 border-b border-gray-200">
-                Notifications
-              </h3>
-              <div className="flex flex-col">
-                <button className="px-4 py-2 hover:bg-gray-100 text-left">
-                  New ticket assigned to you
-                </button>
-                <button className="px-4 py-2 hover:bg-gray-100 text-left">
-                  Server downtime alert
-                </button>
-                <button className="px-4 py-2 hover:bg-gray-100 text-left">
-                  System maintenance scheduled
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* Profile Icon */}
           <button
             className="text-xl"
-            onClick={() => {
-              setProfileMenuOpen(!isProfileMenuOpen);
-              setNotificationOpen(false);
-            }}
+            onClick={() => setProfileMenuOpen(!isProfileMenuOpen)}
           >
             <FaUser />
           </button>
@@ -168,7 +129,7 @@ export default function Navbar({ setToken }: NavbarProps) {
             <FaSignOutAlt className="mr-2" /> Logout
           </button>
         </div>
-      </div>
+      )}
     </nav>
   );
 }
