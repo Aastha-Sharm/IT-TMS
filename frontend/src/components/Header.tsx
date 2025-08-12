@@ -1,15 +1,34 @@
 import React, { useState } from "react";
-import { FaBars, FaSearch, FaEnvelope, FaBell, FaUser, FaEllipsisV } from "react-icons/fa";
+import {
+  FaBars,
+  FaSearch,
+  FaEnvelope,
+  FaBell,
+  FaUser,
+  FaEllipsisV,
+  FaSignOutAlt,
+} from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
-export default function Navbar() {
+interface NavbarProps {
+  setToken: React.Dispatch<React.SetStateAction<string | null>>;
+}
+
+export default function Navbar({ setToken }: NavbarProps) {
   const [isProfileMenuOpen, setProfileMenuOpen] = useState(false);
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setToken(null); // NEW: Update token state in App
+    navigate("/login");
+  };
+
+  // ... rest is exactly your original code unchanged
   return (
     <nav className="bg-blue-500 text-white shadow-md">
-      {/* Top Bar */}
       <div className="flex items-center justify-between px-4 py-2">
-        {/* Left: Menu Icon + Logo */}
         <div className="flex items-center gap-4">
           <button className="text-xl">
             <FaBars />
@@ -20,8 +39,6 @@ export default function Navbar() {
             className="h-10 object-contain"
           />
         </div>
-
-        {/* Middle: Search Bar */}
         <div className="hidden sm:flex items-center bg-white text-black rounded-full px-3 py-1 w-72">
           <FaSearch className="text-gray-500 mr-2" />
           <input
@@ -30,8 +47,6 @@ export default function Navbar() {
             className="flex-1 outline-none"
           />
         </div>
-
-        {/* Right: Icons (Desktop) */}
         <div className="hidden md:flex items-center gap-4">
           <button className="relative">
             <FaEnvelope className="text-xl" />
@@ -51,8 +66,6 @@ export default function Navbar() {
           >
             <FaUser />
           </button>
-
-          {/* Profile Dropdown */}
           {isProfileMenuOpen && (
             <div className="absolute right-4 top-14 bg-white text-black rounded shadow-lg w-40">
               <button className="block px-4 py-2 hover:bg-gray-100 w-full text-left">
@@ -61,11 +74,15 @@ export default function Navbar() {
               <button className="block px-4 py-2 hover:bg-gray-100 w-full text-left">
                 My Account
               </button>
+              <button
+                onClick={handleLogout}
+                className="block px-4 py-2 hover:bg-gray-100 w-full text-left flex items-center gap-2"
+              >
+                <FaSignOutAlt /> Logout
+              </button>
             </div>
           )}
         </div>
-
-        {/* Mobile Menu Toggle */}
         <div className="md:hidden">
           <button
             className="text-xl"
@@ -75,8 +92,6 @@ export default function Navbar() {
           </button>
         </div>
       </div>
-
-      {/* Mobile Search */}
       <div className="sm:hidden px-4 py-2">
         <div className="flex items-center bg-white text-black rounded-full px-3 py-1">
           <FaSearch className="text-gray-500 mr-2" />
@@ -87,8 +102,6 @@ export default function Navbar() {
           />
         </div>
       </div>
-
-      {/* Mobile Menu */}
       {isMobileMenuOpen && (
         <div className="md:hidden bg-white text-black shadow-lg">
           <button className="flex items-center px-4 py-2 hover:bg-gray-100 w-full">
@@ -108,6 +121,12 @@ export default function Navbar() {
             onClick={() => setProfileMenuOpen(!isProfileMenuOpen)}
           >
             <FaUser className="mr-2" /> Profile
+          </button>
+          <button
+            onClick={handleLogout}
+            className="flex items-center px-4 py-2 hover:bg-gray-100 w-full"
+          >
+            <FaSignOutAlt className="mr-2" /> Logout
           </button>
         </div>
       )}

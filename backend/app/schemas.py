@@ -9,7 +9,7 @@ class UserCreate(BaseModel):
     role: Optional[str] = "User"
 
 class UserLogin(BaseModel):
-    username: str
+    email: str
     password: str
 
 class UserResponse(BaseModel):
