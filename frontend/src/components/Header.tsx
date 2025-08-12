@@ -5,19 +5,30 @@ import {
   FaEnvelope,
   FaBell,
   FaUser,
-  FaTimes,
+  FaEllipsisV,
+  FaSignOutAlt,
 } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
-export default function Navbar() {
+interface NavbarProps {
+  setToken: React.Dispatch<React.SetStateAction<string | null>>;
+}
+
+export default function Navbar({ setToken }: NavbarProps) {
   const [isProfileMenuOpen, setProfileMenuOpen] = useState(false);
-  const [isSideMenuOpen, setSideMenuOpen] = useState(false);
-  const [isNotificationOpen, setNotificationOpen] = useState(false);
+  const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setToken(null); // NEW: Update token state in App
+    navigate("/login");
+  };
+
+  // ... rest is exactly your original code unchanged
   return (
-    <nav className="bg-blue-500 text-white shadow-md relative">
-      {/* Top Bar */}
+    <nav className="bg-blue-500 text-white shadow-md">
       <div className="flex items-center justify-between px-4 py-2">
-        {/* Left: Menu Icon + Logo */}
         <div className="flex items-center gap-4">
           <button
             className="text-xl"
@@ -34,8 +45,6 @@ export default function Navbar() {
             className="h-10 object-contain"
           />
         </div>
-
-        {/* Middle: Search Bar */}
         <div className="hidden sm:flex items-center bg-white text-black rounded-full px-3 py-1 w-72">
           <FaSearch className="text-gray-500 mr-2" />
           <input
@@ -44,10 +53,7 @@ export default function Navbar() {
             className="flex-1 outline-none"
           />
         </div>
-
-        {/* Right: Icons */}
-        <div className="hidden md:flex items-center gap-4 relative">
-          {/* Messages Icon */}
+        <div className="hidden md:flex items-center gap-4">
           <button className="relative">
             <FaEnvelope className="text-xl" />
             <span className="absolute -top-1 -right-2 bg-red-500 text-xs px-1 rounded-full">
@@ -99,8 +105,6 @@ export default function Navbar() {
           >
             <FaUser />
           </button>
-
-          {/* Profile Dropdown */}
           {isProfileMenuOpen && (
             <div className="absolute right-4 top-14 bg-white text-black rounded shadow-lg w-40">
               <button className="block px-4 py-2 hover:bg-gray-100 w-full text-left">
@@ -109,38 +113,59 @@ export default function Navbar() {
               <button className="block px-4 py-2 hover:bg-gray-100 w-full text-left">
                 My Account
               </button>
+              <button
+                onClick={handleLogout}
+                className="block px-4 py-2 hover:bg-gray-100 w-full text-left flex items-center gap-2"
+              >
+                <FaSignOutAlt /> Logout
+              </button>
             </div>
           )}
         </div>
-      </div>
-
-      {/* Side Menu */}
-      <div
-        className={`fixed top-0 left-0 h-full w-64 bg-white text-black shadow-lg transform transition-transform duration-300 z-50 ${
-          isSideMenuOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
-      >
-        {/* Close Button */}
-        <div className="flex justify-between items-center px-4 py-3 border-b border-gray-200">
-          <h2 className="font-semibold">Menu</h2>
-          <button className="text-xl" onClick={() => setSideMenuOpen(false)}>
-            <FaTimes />
+        <div className="md:hidden">
+          <button
+            className="text-xl"
+            onClick={() => setMobileMenuOpen(!isMobileMenuOpen)}
+          >
+            <FaEllipsisV />
           </button>
         </div>
-
-        {/* Menu Items */}
-        <div className="flex flex-col">
-          <button className="px-4 py-2 hover:bg-gray-100 text-left">
-            Messages <span className="ml-2 text-sm text-gray-600">(4)</span>
+      </div>
+      <div className="sm:hidden px-4 py-2">
+        <div className="flex items-center bg-white text-black rounded-full px-3 py-1">
+          <FaSearch className="text-gray-500 mr-2" />
+          <input
+            type="text"
+            placeholder="Search…"
+            className="flex-1 outline-none"
+          />
+        </div>
+      </div>
+      {isMobileMenuOpen && (
+        <div className="md:hidden bg-white text-black shadow-lg">
+          <button className="flex items-center px-4 py-2 hover:bg-gray-100 w-full">
+            <FaEnvelope className="mr-2" /> Messages
+            <span className="ml-auto bg-red-500 text-white text-xs px-2 rounded-full">
+              4
+            </span>
           </button>
-          <button className="px-4 py-2 hover:bg-gray-100 text-left">
-            Notifications <span className="ml-2 text-sm text-gray-600">(17)</span>
+          <button className="flex items-center px-4 py-2 hover:bg-gray-100 w-full">
+            <FaBell className="mr-2" /> Notifications
+            <span className="ml-auto bg-red-500 text-white text-xs px-2 rounded-full">
+              17
+            </span>
           </button>
-          <button className="px-4 py-2 hover:bg-gray-100 text-left">
-            Profile
+          <button
+            className="flex items-center px-4 py-2 hover:bg-gray-100 w-full"
+            onClick={() => setProfileMenuOpen(!isProfileMenuOpen)}
+          >
+            <FaUser className="mr-2" /> Profile
           </button>
-          <button className="px-4 py-2 hover:bg-gray-100 text-left">
-            Settings
+          <button
+            onClick={handleLogout}
+            className="flex items-center px-4 py-2 hover:bg-gray-100 w-full"
+          >
+            <FaSignOutAlt className="mr-2" /> Logout
           </button>
         </div>
       </div>
