@@ -150,9 +150,9 @@ export default function Navbar({ setToken }: NavbarProps) {
           </button>
           {isProfileMenuOpen && (
             <div className="absolute right-4 top-14 bg-white text-black rounded shadow-lg w-40 z-50">
-              <button className="block px-4 py-2 hover:bg-blue-100 w-full text-left">
+              {/* <button className="block px-4 py-2 hover:bg-blue-100 w-full text-left">
                 Profile
-              </button>
+              </button> */}
               <button className="block px-4 py-2 hover:bg-blue-100 w-full text-left">
                 My Account
               </button>

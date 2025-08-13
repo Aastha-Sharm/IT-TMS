@@ -9,7 +9,8 @@ import {
 import Header from "./components/Header";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
-import Home from "./components/Home";
+// import Home from "./components/Home";
+import User_dashboard from "./components/User_dashboard";
 import Footer from "./components/Footer";  // import Footer
 
 const PrivateRoute = ({ children }: { children: ReactNode }) => {
@@ -43,7 +44,7 @@ const App: React.FC = () => {
               path="/"
               element={
                 <PrivateRoute>
-                  <Home />
+                  <User_dashboard />
                 </PrivateRoute>
               }
             />
