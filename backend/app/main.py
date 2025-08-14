@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from app.database import engine, Base
 from app import models
-from app.routes import auth 
+from app.routes import auth, ticket
 from fastapi.middleware.cors import CORSMiddleware
 
 
@@ -20,3 +20,9 @@ app.add_middleware(
 )
 
 app.include_router(auth.router, tags=["Authentication"])
+app.include_router(ticket.router, tags=["Tickets"])
+
+
+@app.get("/")
+def root():
+    return {"message": "Welcome to the Ticketing System API"}
