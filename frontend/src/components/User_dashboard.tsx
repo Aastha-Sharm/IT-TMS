@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { ChevronUpIcon, ChevronDownIcon, ArrowsUpDownIcon } from "@heroicons/react/24/solid";
 
 interface ProgressCircleProps {
   label: string;
@@ -55,7 +56,7 @@ interface Ticket {
 }
 
 const Dashboard: React.FC = () => {
-  const tickets: Ticket[] = [
+  const ticketsData: Ticket[] = [
     { id: 1, type: "Service", title: "Login issue", description: "User unable to log in.", status: "Created", priority: "High", agentResponse: "Checking logs." },
     { id: 2, type: "Service", title: "Page slow", description: "Dashboard slow loading.", status: "In Progress", priority: "Medium", agentResponse: "Optimizing queries." },
     { id: 3, type: "Asset", title: "Email not sent", description: "SMTP server failing.", status: "Resolved", priority: "High", agentResponse: "SMTP restarted." },
@@ -65,44 +66,123 @@ const Dashboard: React.FC = () => {
     { id: 7, type: "Asset", title: "Security patch", description: "Update applied.", status: "Closed", priority: "Medium", agentResponse: "Patch verified." }
   ];
 
-  const totalTickets = tickets.length;
+  const [tickets, setTickets] = useState<Ticket[]>(ticketsData);
+  const [sortConfig, setSortConfig] = useState<{ key: keyof Ticket; direction: "asc" | "desc" | null }>({ key: "type", direction: null });
+  const [entriesToShow, setEntriesToShow] = useState<number>(5);
+
+  const handleSort = (key: keyof Ticket) => {
+    let direction: "asc" | "desc" | null = "asc";
+    if (sortConfig.key === key && sortConfig.direction === "asc") {
+      direction = "desc";
+    } else if (sortConfig.key === key && sortConfig.direction === "desc") {
+      direction = null; // reset
+    }
+    setSortConfig({ key, direction });
+
+    if (direction) {
+      const sorted = [...tickets].sort((a, b) =>
+        a[key] > b[key] ? (direction === "asc" ? 1 : -1) : a[key] < b[key] ? (direction === "asc" ? -1 : 1) : 0
+      );
+      setTickets(sorted);
+    } else {
+      setTickets(ticketsData); // reset to original
+    }
+  };
+
+  const totalTickets = ticketsData.length;
   const openStatuses = ["Created", "Assigned", "Reopened"];
   const resolvedStatuses = ["Resolved", "Closed"];
   const unresolvedStatuses = ["Not Resolved"];
 
-  const countOpen = tickets.filter(t => openStatuses.includes(t.status)).length;
-  const countInProgress = tickets.filter(t => t.status === "In Progress").length;
-  const countResolved = tickets.filter(t => resolvedStatuses.includes(t.status)).length;
-  const countUnresolved = tickets.filter(t => unresolvedStatuses.includes(t.status)).length;
+  const countOpen = ticketsData.filter(t => openStatuses.includes(t.status)).length;
+  const countInProgress = ticketsData.filter(t => t.status === "In Progress").length;
+  const countResolved = ticketsData.filter(t => resolvedStatuses.includes(t.status)).length;
+  const countUnresolved = ticketsData.filter(t => unresolvedStatuses.includes(t.status)).length;
+
+  const renderSortIcon = (column: keyof Ticket) => {
+    if (sortConfig.key !== column || sortConfig.direction === null) {
+      return <ArrowsUpDownIcon className="w-4 h-4 text-gray-400" />;
+    }
+    if (sortConfig.direction === "asc") {
+      return <ChevronUpIcon className="w-4 h-4 text-blue-500" />;
+    }
+    return <ChevronDownIcon className="w-4 h-4 text-blue-500" />;
+  };
 
   return (
     <div className="bg-gray-50 min-h-screen p-8">
       <h1 className="text-3xl bg-blue-200 h-12 font-bold text-gray-800 mb-8 px-1 py-1">Ticket Dashboard</h1>
 
       {/* Charts */}
-      <div className="flex flex-wrap gap-6 mb-10">
+      <div className="flex flex-wrap justify-center gap-6 mb-10">
         <ProgressCircle label="Open" current={countOpen} total={totalTickets} color="#FF5089" />
         <ProgressCircle label="In Progress" current={countInProgress} total={totalTickets} color="#FF1659" />
         <ProgressCircle label="Resolved" current={countResolved} total={totalTickets} color="#16A34A" />
         <ProgressCircle label="Unresolved" current={countUnresolved} total={totalTickets} color="#EAB308" />
       </div>
 
+      {/* Show entries */}
+      <div className="mb-3 inline-flex items-center gap-2 border border-gray-300 rounded-md px-3 py-2 bg-white shadow-sm">
+        <label htmlFor="entries" className="text-sm text-gray-700">Show</label>
+        <select
+          id="entries"
+          value={entriesToShow}
+          onChange={(e) => setEntriesToShow(Number(e.target.value))}
+          className="border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value={5}>5</option>
+          <option value={10}>10</option>
+          <option value={totalTickets}>All</option>
+        </select>
+        <span className="text-sm text-gray-700">entries</span>
+      </div>
+
+
       {/* Table */}
       <div className="bg-white rounded-lg shadow-lg overflow-hidden">
         <table className="w-full text-sm text-left text-gray-700">
-          <thead className="bg-gray-100 text-gray-800 text-xs uppercase">
+          <thead className="bg-blue-200 text-gray-800 text-xs uppercase">
             <tr>
               <th className="px-6 py-3">ID</th>
-              <th className="px-6 py-3">Type</th>
+
+              {/* Sortable Type */}
+              <th
+                className="px-6 py-3 cursor-pointer"
+                onClick={() => handleSort("type")}
+              >
+                <span className="inline-flex items-center gap-1">
+                  Type {renderSortIcon("type")}
+                </span>
+              </th>
+
               <th className="px-6 py-3">Title</th>
               <th className="px-6 py-3">Description</th>
-              <th className="px-6 py-3">Priority</th>
-              <th className="px-6 py-3">Status</th>
+
+              {/* Sortable Priority */}
+              <th
+                className="px-6 py-3 cursor-pointer"
+                onClick={() => handleSort("priority")}
+              >
+                <span className="inline-flex items-center gap-1">
+                  Priority {renderSortIcon("priority")}
+                </span>
+              </th>
+
+              {/* Sortable Status */}
+              <th
+                className="px-6 py-3 cursor-pointer"
+                onClick={() => handleSort("status")}
+              >
+                <span className="inline-flex items-center gap-1">
+                  Status {renderSortIcon("status")}
+                </span>
+              </th>
+
               <th className="px-6 py-3">Agent Response</th>
             </tr>
           </thead>
           <tbody>
-            {tickets.map(ticket => (
+            {tickets.slice(0, entriesToShow).map(ticket => (
               <tr key={ticket.id} className="border-b hover:bg-gray-50">
                 <td className="px-6 py-4">{ticket.id}</td>
                 <td className="px-6 py-4">{ticket.type}</td>
