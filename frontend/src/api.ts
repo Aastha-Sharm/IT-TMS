@@ -24,7 +24,23 @@ export const signupUser = async (data: SignupData) => {
   return response.data;
 };
 
-export const loginUser = async (data: LoginData): Promise<TokenResponse> => {
-  const response = await axios.post(`${API_URL}/auth/login`, data);
+export const loginUser = async (
+  data: LoginData
+): Promise<TokenResponse> => {
+  // Must send as form-urlencoded
+  const formData = new URLSearchParams();
+  formData.append("username", data.email.trim()); // OAuth2PasswordRequestForm requires `username`
+  formData.append("password", data.password.trim());
+
+  const response = await axios.post(
+    `${API_URL}/auth/login`,
+    formData,
+    {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    }
+  );
+
   return response.data;
 };

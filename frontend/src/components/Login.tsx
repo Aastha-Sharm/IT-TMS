@@ -17,10 +17,18 @@ function Login({ setToken }: LoginProps) {
     e.preventDefault();
 
     try {
-      const response = await axios.post("http://127.0.0.1:8000/auth/login", {
-        email,
-        password,
-      });
+       const formData = new URLSearchParams();
+    formData.append("username", email.trim()); // Backend expects "username"
+    formData.append("password", password.trim());
+     const response = await axios.post(
+      "http://127.0.0.1:8000/auth/login",
+      formData,
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      }
+    );
 
       console.log("Login successful:", response.data);
 
