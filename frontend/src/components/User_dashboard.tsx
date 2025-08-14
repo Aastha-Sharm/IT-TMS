@@ -111,7 +111,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen p-8">
-      <h1 className="text-3xl bg-blue-200 h-12 font-bold text-gray-800 mb-8 px-1 py-1">Ticket Dashboard</h1>
+      <h1 className="text-3xl bg-gradient-to-r from-sky-400 to-emerald-300 h-12 font-bold text-gray-800 mb-8 px-1 py-1">Ticket Dashboard</h1>
 
       {/* Charts */}
       <div className="flex flex-wrap justify-center gap-6 mb-10">
