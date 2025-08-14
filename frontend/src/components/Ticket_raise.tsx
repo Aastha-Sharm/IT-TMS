@@ -1,0 +1,177 @@
+import React, { useState, useRef } from "react";
+
+const TicketForm: React.FC = () => {
+  const [type, setType] = useState<string>("Service");
+  const [category, setCategory] = useState<string>("");
+  const [priority, setPriority] = useState<string>("Low");
+  const [title, setTitle] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+  const [files, setFiles] = useState<File[]>([]);
+
+  const fileInputRef = useRef<HTMLInputElement>(null); // 👈 create ref
+
+  const serviceCategories: string[] = [
+    "Network Issue",
+    "Software Installation",
+    "Email Support",
+  ];
+  const assetCategories: string[] = ["Laptop", "Printer", "Mobile Device"];
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log({ type, category, priority, title, description, files });
+  };
+
+  const handleRemoveFile = (index: number) => {
+    const newFiles = files.filter((_, i) => i !== index);
+    setFiles(newFiles);
+
+    // If no files remain, clear the file input display
+    if (newFiles.length === 0 && fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const inputClasses =
+    "w-full border bg-blue-100 border-gray-300 rounded-lg px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200";
+  const labelClasses = "block text-gray-700 font-semibold mb-1";
+
+  return (
+    <div className="max-w-4xl mx-auto p-8 ">
+      <h2 className="text-3xl  h-12 font-bold text-center text-gray-800 mb-8 px-1 py-1">
+        Create New Ticket
+      </h2>
+
+      <form
+        onSubmit={handleSubmit}
+        className="grid grid-cols-1 md:grid-cols-2 gap-6"
+      >
+        {/* Type */}
+        <div>
+          <label className={labelClasses}>Type *</label>
+          <select
+            value={type}
+            onChange={(e) => {
+              setType(e.target.value);
+              setCategory("");
+            }}
+            className={inputClasses}
+          >
+            <option value="Service">Service</option>
+            <option value="Asset">Asset</option>
+          </select>
+        </div>
+
+        {/* Category */}
+        <div>
+          <label className={labelClasses}>Category *</label>
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className={inputClasses}
+          >
+            <option value="">Select Category</option>
+            {(type === "Service" ? serviceCategories : assetCategories).map(
+              (cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              )
+            )}
+          </select>
+        </div>
+
+        {/* Priority */}
+        <div>
+          <label className={labelClasses}>Priority *</label>
+          <select
+            value={priority}
+            onChange={(e) => setPriority(e.target.value)}
+            className={inputClasses}
+          >
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+          </select>
+        </div>
+
+        {/* Title */}
+        <div>
+          <label className={labelClasses}>Title *</label>
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Enter ticket title"
+            className={inputClasses}
+          />
+        </div>
+
+        {/* Description */}
+        <div className="md:col-span-2">
+          <label className={labelClasses}>Description *</label>
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Describe the issue or request in detail..."
+            rows={4}
+            className={`${inputClasses} rounded-lg`}
+          />
+        </div>
+
+        {/* Attachments */}
+        <div className="md:col-span-2">
+          <label className={labelClasses}>Attachments</label>
+          <input
+            ref={fileInputRef} // 👈 attach ref
+            type="file"
+            multiple
+            onChange={(e) =>
+              setFiles((prev) =>
+                e.target.files
+                  ? [...prev, ...Array.from(e.target.files)]
+                  : prev
+              )
+            }
+            className={`${inputClasses} file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-50`}
+          />
+
+          {/* Display selected files */}
+          {files.length > 0 && (
+            <div className="mt-4 space-y-2">
+              {files.map((f, index) => (
+                <div
+                  key={index}
+                  className="flex justify-between items-center border border-gray-300 rounded-lg px-3 py-2 bg-white shadow-sm"
+                >
+                  <span className="text-sm text-gray-700 truncate max-w-xs">
+                    {f.name}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveFile(index)}
+                    className="text-red-500 hover:text-red-700 font-bold text-lg"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Submit Button */}
+        <div className="md:col-span-2 text-center mt-6">
+          <button
+            type="submit"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-10 py-3 rounded-full shadow-md font-medium transition duration-200"
+          >
+            Submit Ticket
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+};
+
+export default TicketForm;
