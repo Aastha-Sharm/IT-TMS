@@ -67,7 +67,7 @@ export default function Navbar({ setToken }: NavbarProps) {
   }, [isSideMenuOpen, isNotificationOpen, isProfileMenuOpen]);
 
   return (
-    <nav className="bg-blue-500 text-white shadow-md relative">
+    <nav className="bg-gradient-to-r from-blue-600 to-red-500 text-white shadow-md relative">
       <div className="flex items-center justify-between px-4 py-2 relative">
         <div className="flex items-center gap-4 relative">
           {/* Menu Button */}
