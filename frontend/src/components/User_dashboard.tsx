@@ -70,24 +70,42 @@ const Dashboard: React.FC = () => {
   const [sortConfig, setSortConfig] = useState<{ key: keyof Ticket; direction: "asc" | "desc" | null }>({ key: "type", direction: null });
   const [entriesToShow, setEntriesToShow] = useState<number>(5);
 
-  const handleSort = (key: keyof Ticket) => {
-    let direction: "asc" | "desc" | null = "asc";
-    if (sortConfig.key === key && sortConfig.direction === "asc") {
-      direction = "desc";
-    } else if (sortConfig.key === key && sortConfig.direction === "desc") {
-      direction = null; // reset
-    }
-    setSortConfig({ key, direction });
+ const handleSort = (key: keyof Ticket) => {
+  let direction: "asc" | "desc" | null = "asc";
+  if (sortConfig.key === key && sortConfig.direction === "asc") {
+    direction = "desc";
+  } else if (sortConfig.key === key && sortConfig.direction === "desc") {
+    direction = null; // reset
+  }
+  setSortConfig({ key, direction });
 
-    if (direction) {
-      const sorted = [...tickets].sort((a, b) =>
-        a[key] > b[key] ? (direction === "asc" ? 1 : -1) : a[key] < b[key] ? (direction === "asc" ? -1 : 1) : 0
-      );
+  if (direction) {
+    const sorted = [...tickets].sort((a, b) => {
+      if (key === "priority") {
+        // Custom priority ranking
+        const priorityOrder: Record<string, number> = {
+          Low: 1,
+          Medium: 2,
+          High: 3,
+        };
+
+        return direction === "asc"
+          ? priorityOrder[a.priority] - priorityOrder[b.priority]
+          : priorityOrder[b.priority] - priorityOrder[a.priority];
+      } else {
+        // Default string/number sorting
+        return a[key] > b[key]
+          ? direction === "asc" ? 1 : -1
+          : a[key] < b[key]
+          ? direction === "asc" ? -1 : 1
+          : 0;
+        }
+      });
       setTickets(sorted);
     } else {
       setTickets(ticketsData); // reset to original
     }
-  };
+    };
 
   const totalTickets = ticketsData.length;
   const openStatuses = ["Created", "Assigned", "Reopened"];
@@ -110,7 +128,7 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen p-8">
+    <div className="bg-gradient-to-tr from-sky-200 to-sky-100 min-h-screen p-8">
       <h1 className="text-3xl bg-gradient-to-r from-sky-400 to-emerald-300 h-12 font-bold text-gray-800 mb-8 px-1 py-1">Ticket Dashboard</h1>
 
       {/* Charts */}
@@ -141,7 +159,7 @@ const Dashboard: React.FC = () => {
       {/* Table */}
       <div className="bg-white rounded-lg shadow-lg overflow-hidden">
         <table className="w-full text-sm text-left text-gray-700">
-          <thead className="bg-blue-200 text-gray-800 text-xs uppercase">
+          <thead className="bg-blue-300 text-gray-800 text-xs uppercase">
             <tr>
               <th className="px-6 py-3">ID</th>
 
