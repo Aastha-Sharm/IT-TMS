@@ -132,7 +132,10 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="bg-white min-h-screen p-8">
-      <h1 className="text-3xl width-full h-12 font-bold text-gray-800 mb-10 px-1 py-1">Ticket Dashboard</h1>
+      <h1 className="text-4xl font-bold bg-clip-text text-black-500 drop-shadow-md tracking-wide mb-10">
+  Ticket Dashboard
+</h1>
+
 
       {/* Charts */}
       <div className="flex flex-wrap justify-center gap-6 mb-10">

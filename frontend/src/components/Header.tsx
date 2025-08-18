@@ -33,7 +33,11 @@ export default function Navbar({ setToken }: NavbarProps) {
     navigate("/login");
   };
 
-  const menuItems = ["Create Ticket", "Ticket Details"];
+const menuItems = [
+  { name: "Dashboard", path: "/" },
+  { name: "Create Ticket", path: "/raise-ticket" }
+];
+
 
   // Close menus when clicking outside
   useEffect(() => {
@@ -100,17 +104,22 @@ export default function Navbar({ setToken }: NavbarProps) {
               </button>
             </div>
 
-            {/* Menu Items */}
+           {/* Menu Items */}
             <div className="flex flex-col">
               {menuItems.map((item, index) => (
                 <button
                   key={index}
+                  onClick={() => {
+                    navigate(item.path);
+                    setSideMenuOpen(false); // close sidebar after clicking
+                  }}
                   className="block px-4 py-2 hover:bg-blue-100 w-full text-left"
                 >
-                  {item}
+                  {item.name}
                 </button>
               ))}
             </div>
+
           </div>
 
           <img

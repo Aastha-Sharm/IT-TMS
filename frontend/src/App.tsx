@@ -32,20 +32,22 @@ const AppContent: React.FC<{ token: string | null; setToken: any }> = ({ token, 
     location.pathname === "/login" || location.pathname === "/signup";
 
   return (
-    <div className="flex flex-col min-h-screen">
-      {/* Header shown only if logged in and not on login/signup */}
-      {token && !hideHeaderFooter && <Header setToken={setToken} />}
-      
-      {/* Main content grows to fill remaining space */}
-      <main className="flex-grow">
-        <Routes>
-          <Route path="/login" element={<Login setToken={setToken} />} />
-          <Route path="/signup" element={<Signup setToken={setToken} />} />
-          <Route
-            path="/"
-            element={
-              <PrivateRoute>
-                {/* <TicketDetails
+    <Router>
+      {/* Flex container to enable sticky footer */}
+      <div className="flex flex-col min-h-screen">
+        {/* Header shown only if logged in */}
+        {token && <Header setToken={setToken} />}
+        
+        {/* Main content grows to fill remaining space */}
+        <main className="flex-grow">
+          <Routes>
+            <Route path="/login" element={<Login setToken={setToken} />} />
+            <Route path="/signup" element={<Signup setToken={setToken} />} />
+            <Route
+              path="/"
+              element={
+                <PrivateRoute>
+                <TicketDetails
                     id={101}
                     title="Unable to access VPN"
                     description="I am unable to connect to the company VPN from home. It shows authentication failed even with correct credentials."
@@ -57,16 +59,13 @@ const AppContent: React.FC<{ token: string | null; setToken: any }> = ({ token, 
                     response="Our IT team is checking the VPN server issue. Please try again in 30 minutes."
                     onClose={() => alert("Ticket Closed!")}
                     onDelete={() => alert("Ticket Deleted!")}
-                  /> */}
-                {/* <Agent_dashboard /> */}
-                {/* <Service_tickets /> */}
-                <Service_tickets />
-              </PrivateRoute>
-            }
-          />
-          <Route path="*" element={<Navigate to={token ? "/" : "/login"} />} />
-        </Routes>
-      </main>
+                  />
+                        </PrivateRoute>
+                      }
+                    />
+            <Route path="*" element={<Navigate to={token ? "/" : "/login"} />} />
+          </Routes>
+        </main>
 
       {/* Sticky Footer shown only if logged in and not on login/signup */}
       {token && !hideHeaderFooter && <Footer />}
