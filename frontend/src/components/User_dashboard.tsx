@@ -139,10 +139,10 @@ const Dashboard: React.FC = () => {
 
       {/* Charts */}
       <div className="flex flex-wrap justify-center gap-6 mb-10">
-        <ProgressCircle label="Open" current={countOpen} total={totalTickets} color="#FF5089" />
-        <ProgressCircle label="In Progress" current={countInProgress} total={totalTickets} color="#FF1659" />
-        <ProgressCircle label="Resolved" current={countResolved} total={totalTickets} color="#16A34A" />
-        <ProgressCircle label="Unresolved" current={countUnresolved} total={totalTickets} color="#EAB308" />
+        <ProgressCircle label="Open" current={countOpen} total={totalTickets} color="#3617a7ff" />
+        <ProgressCircle label="In Progress" current={countInProgress} total={totalTickets} color="#3617a7ff" />
+        <ProgressCircle label="Resolved" current={countResolved} total={totalTickets} color="#3617a7ff" />
+        <ProgressCircle label="Unresolved" current={countUnresolved} total={totalTickets} color="#3617a7ff" />
       </div>
 
       {/* Controls Row (Show Entries + Search) */}
