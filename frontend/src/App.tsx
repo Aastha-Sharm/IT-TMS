@@ -12,6 +12,7 @@ import Signup from "./components/Signup";
 // import Home from "./components/Home";
 import Ticket_raise from "./components/Ticket_raise";
 import User_dashboard from "./components/User_dashboard";
+// import TicketDetails from "./components/TicketDetails";
 import Footer from "./components/Footer";  // import Footer
 
 const PrivateRoute = ({ children }: { children: ReactNode }) => {
