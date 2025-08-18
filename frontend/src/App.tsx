@@ -12,6 +12,7 @@ import Signup from "./components/Signup";
 // import Home from "./components/Home";
 // import Ticket_raise from "./components/Ticket_raise";
 import User_dashboard from "./components/User_dashboard";
+import TicketDetails from "./components/TicketDetails";
 import Footer from "./components/Footer";  // import Footer
 
 const PrivateRoute = ({ children }: { children: ReactNode }) => {
@@ -45,7 +46,18 @@ const App: React.FC = () => {
               path="/"
               element={
                 <PrivateRoute>
-                  <User_dashboard />
+                  <TicketDetails
+                    id={1}
+                    title="Sample Ticket"
+                    description="This is a sample ticket description."
+                    created_by="User1"
+                    category="General"
+                    priority="High"
+                    status="Open"
+                    created_at="2023-01-01"
+                    onClose={() => console.log("Close ticket")}
+                    onDelete={() => console.log("Delete ticket")}
+                  />
                 </PrivateRoute>
               }
             />

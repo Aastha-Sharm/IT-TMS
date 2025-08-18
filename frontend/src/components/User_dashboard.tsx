@@ -119,7 +119,7 @@ const Dashboard: React.FC = () => {
 
   const renderSortIcon = (column: keyof Ticket) => {
     if (sortConfig.key !== column || sortConfig.direction === null) {
-      return <ArrowsUpDownIcon className="w-4 h-4 text-gray-400" />;
+      return <ArrowsUpDownIcon className="w-4 h-4 text-black" />;
     }
     if (sortConfig.direction === "asc") {
       return <ChevronUpIcon className="w-4 h-4 text-blue-500" />;
@@ -159,7 +159,7 @@ const Dashboard: React.FC = () => {
       {/* Table */}
       <div className="bg-white rounded-lg shadow-lg overflow-hidden">
         <table className="w-full text-sm text-left text-gray-700">
-          <thead className="bg-blue-300 text-gray-800 text-xs uppercase">
+          <thead className="bg-blue-200 text-gray-800 text-xs uppercase">
             <tr>
               <th className="px-6 py-3">ID</th>
 
