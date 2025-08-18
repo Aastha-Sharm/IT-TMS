@@ -10,7 +10,7 @@ import Header from "./components/Header";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
 // import Home from "./components/Home";
-// import Ticket_raise from "./components/Ticket_raise";
+import Ticket_raise from "./components/Ticket_raise";
 import User_dashboard from "./components/User_dashboard";
 import Footer from "./components/Footer";  // import Footer
 
@@ -45,7 +45,7 @@ const App: React.FC = () => {
               path="/"
               element={
                 <PrivateRoute>
-                  <User_dashboard />
+                  <Ticket_raise />
                 </PrivateRoute>
               }
             />

@@ -44,3 +44,37 @@ export const loginUser = async (
 
   return response.data;
 };
+
+
+export const createTicket = async (
+  token: string,
+  data: {
+    type: string;
+    category: string;
+    priority: string;
+    title: string;
+    description: string;
+    files: File[];
+  }
+) => {
+  // const formData = new FormData();
+  // formData.append("type", data.type);
+  // formData.append("category", data.category);
+  // formData.append("priority", data.priority);
+  // formData.append("title", data.title);
+  // formData.append("description", data.description);
+
+  // data.files.forEach((file) => {
+  //   formData.append("files", file);
+  // });
+console.log("Ticket payload:", data);
+
+  const response = await axios.post("http://localhost:8000/tickets/", data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+
+  return response.data;
+};

@@ -1,7 +1,12 @@
-from pydantic import BaseModel, EmailStr
-from typing import Optional
+from pydantic import BaseModel, EmailStr, validator
+from typing import Optional, Union
 from datetime import datetime
 from enum import Enum
+
+
+# ===========================
+# User Schemas
+# ===========================
 
 class UserCreate(BaseModel):
     username: str
@@ -9,9 +14,11 @@ class UserCreate(BaseModel):
     password: str
     role: Optional[str] = "User"
 
+
 class UserLogin(BaseModel):
-    email: str
+    email: EmailStr
     password: str
+
 
 class UserResponse(BaseModel):
     user_id: int
@@ -23,14 +30,31 @@ class UserResponse(BaseModel):
     class Config:
         orm_mode = True
 
+
 class Token(BaseModel):
     access_token: str
     token_type: str = "bearer"
 
 
-class TicketCategory(str, Enum):
-    service_request = "Service Request"
-    asset_request = "Asset Request"
+# ===========================
+# Ticket Schemas
+# ===========================
+
+class TicketType(str, Enum):
+    service = "Service"
+    asset = "Asset"
+
+
+class ServiceCategory(str, Enum):
+    network_issue = "Network Issue"
+    software_installation = "Software Installation"
+    email_support = "Email Support"
+
+
+class AssetCategory(str, Enum):
+    laptop = "Laptop"
+    printer = "Printer"
+    mobile_device = "Mobile Device"
 
 
 class TicketPriority(str, Enum):
@@ -50,19 +74,32 @@ class TicketStatus(str, Enum):
 
 
 class TicketBase(BaseModel):
+    type: TicketType
+    category: str   # accept string, validate later
+    priority: TicketPriority
     title: str
     description: str
-    category: TicketCategory
-    priority: TicketPriority
+
+    # normalize input (case-insensitive, strip spaces)
+    @validator("type", "category", "priority", pre=True)
+    def normalize_enum(cls, v):
+        if isinstance(v, str):
+            return v.strip().title()
+        return v
 
 
 class TicketCreate(TicketBase):
     pass
 
 
-class TicketResponse(TicketBase):
+class TicketResponse(BaseModel):
     id: int
+    title: str
+    description: str
     created_by: str
+    type: TicketType
+    category: str   # <-- keep as plain string (can be service or asset category)
+    priority: TicketPriority
     status: TicketStatus
     created_at: datetime
 

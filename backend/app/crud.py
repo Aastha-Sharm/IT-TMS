@@ -6,6 +6,7 @@ def create_ticket(db: Session, ticket: schemas.TicketCreate, user_id: int, usern
     db_ticket = models.Ticket(
         title=ticket.title,
         description=ticket.description,
+        type= ticket.type,
         category=ticket.category,
         priority=ticket.priority,
         created_by=username,

@@ -8,7 +8,7 @@ const TicketForm: React.FC = () => {
   const [description, setDescription] = useState<string>("");
   const [files, setFiles] = useState<File[]>([]);
 
-  const fileInputRef = useRef<HTMLInputElement>(null); // 👈 create ref
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const serviceCategories: string[] = [
     "Network Issue",
@@ -17,16 +17,52 @@ const TicketForm: React.FC = () => {
   ];
   const assetCategories: string[] = ["Laptop", "Printer", "Mobile Device"];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log({ type, category, priority, title, description, files });
+
+    try {
+      const token = localStorage.getItem("token");
+
+      const response = await fetch("http://127.0.0.1:8000/tickets/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          type,
+          category,
+          priority,
+          title,
+          description,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create ticket");
+      }
+
+      const data = await response.json();
+      console.log("Ticket created:", data);
+      alert("Ticket submitted successfully!");
+
+      // reset form
+      setType("Service");
+      setCategory("");
+      setPriority("Low");
+      setTitle("");
+      setDescription("");
+      setFiles([]);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    } catch (err) {
+      console.error(err);
+      alert("Error creating ticket");
+    }
   };
 
   const handleRemoveFile = (index: number) => {
     const newFiles = files.filter((_, i) => i !== index);
     setFiles(newFiles);
-
-    // If no files remain, clear the file input display
     if (newFiles.length === 0 && fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -37,8 +73,8 @@ const TicketForm: React.FC = () => {
   const labelClasses = "block text-gray-700 font-semibold mb-1";
 
   return (
-    <div className="max-w-4xl mx-auto p-8 ">
-      <h2 className="text-3xl  h-12 font-bold text-center text-gray-800 mb-8 px-1 py-1">
+    <div className="max-w-4xl mx-auto p-8">
+      <h2 className="text-3xl h-12 font-bold text-center text-gray-800 mb-8">
         Create New Ticket
       </h2>
 
@@ -119,11 +155,11 @@ const TicketForm: React.FC = () => {
           />
         </div>
 
-        {/* Attachments */}
+        {/* Attachments (ignored in backend for now) */}
         <div className="md:col-span-2">
           <label className={labelClasses}>Attachments</label>
           <input
-            ref={fileInputRef} // 👈 attach ref
+            ref={fileInputRef}
             type="file"
             multiple
             onChange={(e) =>
