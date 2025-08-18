@@ -131,7 +131,7 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <div className="bg-gradient-to-tr from-sky-200 to-sky-100 min-h-screen p-8">
+    <div className="bg-white min-h-screen p-8">
       <h1 className="text-3xl bg-gradient-to-r from-sky-400 to-emerald-300 h-12 font-bold text-gray-800 mb-8 px-1 py-1">Ticket Dashboard</h1>
 
       {/* Charts */}
@@ -173,62 +173,91 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* Table */}
+            {/* Table */}
       <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-        <table className="w-full text-sm text-left text-gray-700">
-          <thead className="bg-blue-200 text-gray-800 text-xs uppercase">
-            <tr>
-              <th className="px-6 py-3">ID</th>
-              <th className="px-6 py-3 cursor-pointer" onClick={() => handleSort("type")}>
-                <span className="inline-flex items-center gap-1">
-                  Type {renderSortIcon("type")}
-                </span>
-              </th>
-              <th className="px-6 py-3">Title</th>
-              <th className="px-6 py-3">Description</th>
-              <th className="px-6 py-3 cursor-pointer" onClick={() => handleSort("priority")}>
-                <span className="inline-flex items-center gap-1">
-                  Priority {renderSortIcon("priority")}
-                </span>
-              </th>
-              <th className="px-6 py-3 cursor-pointer" onClick={() => handleSort("status")}>
-                <span className="inline-flex items-center gap-1">
-                  Status {renderSortIcon("status")}
-                </span>
-              </th>
-              <th className="px-6 py-3">Agent Response</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredTickets.slice(0, entriesToShow).map(ticket => (
-              <tr key={ticket.id} className="border-b hover:bg-gray-50">
-                <td className="px-6 py-4">{ticket.id}</td>
-                <td className="px-6 py-4">{ticket.type}</td>
-                <td className="px-6 py-4 font-medium">{ticket.title}</td>
-                <td className="px-6 py-4">{ticket.description}</td>
-                <td className="px-6 py-4">
-                  <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                    ticket.priority === "High" ? "bg-red-100 text-red-700" :
-                    ticket.priority === "Medium" ? "bg-yellow-100 text-yellow-700" :
-                    "bg-green-100 text-green-700"
-                  }`}>
-                    {ticket.priority}
+        <div
+          className={`overflow-y-auto ${
+            filteredTickets.length > 6 ? "max-h-96" : ""
+          }`}
+        >
+          <table className="w-full text-sm text-left text-gray-700">
+            <thead className="bg-blue-200 text-gray-800 text-xs uppercase sticky top-0 z-10">
+              <tr>
+                <th className="px-6 py-3">ID</th>
+                <th
+                  className="px-6 py-3 cursor-pointer"
+                  onClick={() => handleSort("type")}
+                >
+                  <span className="inline-flex items-center gap-1">
+                    Type {renderSortIcon("type")}
                   </span>
-                </td>
-                <td className="px-6 py-4">
-                  <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                    ticket.status === "Resolved" || ticket.status === "Closed" ? "bg-green-100 text-green-700" :
-                    ticket.status === "In Progress" ? "bg-blue-100 text-blue-700" :
-                    ticket.status === "Not Resolved" ? "bg-red-100 text-red-700" :
-                    "bg-gray-100 text-gray-700"
-                  }`}>
-                    {ticket.status}
+                </th>
+                <th className="px-6 py-3">Title</th>
+                <th className="px-6 py-3">Description</th>
+                <th
+                  className="px-6 py-3 cursor-pointer"
+                  onClick={() => handleSort("priority")}
+                >
+                  <span className="inline-flex items-center gap-1">
+                    Priority {renderSortIcon("priority")}
                   </span>
-                </td>
-                <td className="px-6 py-4">{ticket.agentResponse}</td>
+                </th>
+                <th
+                  className="px-6 py-3 cursor-pointer"
+                  onClick={() => handleSort("status")}
+                >
+                  <span className="inline-flex items-center gap-1">
+                    Status {renderSortIcon("status")}
+                  </span>
+                </th>
+                <th className="px-6 py-3">Agent Response</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filteredTickets.slice(0, entriesToShow).map((ticket) => (
+                <tr
+                  key={ticket.id}
+                  className="border-b hover:bg-gray-50"
+                >
+                  <td className="px-6 py-4">{ticket.id}</td>
+                  <td className="px-6 py-4">{ticket.type}</td>
+                  <td className="px-6 py-4 font-medium">{ticket.title}</td>
+                  <td className="px-6 py-4">{ticket.description}</td>
+                  <td className="px-6 py-4">
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                        ticket.priority === "High"
+                          ? "bg-red-100 text-red-700"
+                          : ticket.priority === "Medium"
+                          ? "bg-yellow-100 text-yellow-700"
+                          : "bg-green-100 text-green-700"
+                      }`}
+                    >
+                      {ticket.priority}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                        ticket.status === "Resolved" ||
+                        ticket.status === "Closed"
+                          ? "bg-green-100 text-green-700"
+                          : ticket.status === "In Progress"
+                          ? "bg-blue-100 text-blue-700"
+                          : ticket.status === "Not Resolved"
+                          ? "bg-red-100 text-red-700"
+                          : "bg-gray-100 text-gray-700"
+                      }`}
+                    >
+                      {ticket.status}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">{ticket.agentResponse}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
