@@ -177,7 +177,7 @@ const Dashboard: React.FC = () => {
       <div className="bg-white rounded-lg shadow-lg overflow-hidden">
         <div
           className={`overflow-y-auto ${
-            filteredTickets.length > 6 ? "max-h-96" : ""
+            filteredTickets.length > 5 ? "max-h-96" : ""
           }`}
         >
           <table className="w-full text-sm text-left text-gray-700">
