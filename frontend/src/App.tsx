@@ -42,23 +42,16 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/login" element={<Login setToken={setToken} />} />
             <Route path="/signup" element={<Signup setToken={setToken} />} />
-           <Route
-                path="/"
-                element={
-                  <PrivateRoute>
-                    <User_dashboard />
-                  </PrivateRoute>
-                }
-            />
+            <Route path="/"  element={ <PrivateRoute>
+                                          <User_dashboard />
+                                       </PrivateRoute>
+                                     } />
 
-              <Route
-                path="/raise-ticket"
-                element={
-                  <PrivateRoute>
-                    <Ticket_raise />
-                  </PrivateRoute>
-                }
-               />
+            <Route path="/raise-ticket" element={<PrivateRoute>
+                                                    <Ticket_raise />
+                                                  </PrivateRoute>
+                                                }/>
+                                                
             <Route path="*" element={<Navigate to={token ? "/" : "/login"} />} />
           </Routes>
         </main>

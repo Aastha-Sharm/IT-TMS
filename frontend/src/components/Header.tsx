@@ -76,7 +76,7 @@ const menuItems = [
         <div className="flex items-center gap-4 relative">
           {/* Menu Button */}
           <button
-            className="text-xl"
+            className="text-xl cursor-pointer"
             onClick={() => {
               setSideMenuOpen(!isSideMenuOpen);
               setNotificationOpen(false);
@@ -105,7 +105,7 @@ const menuItems = [
             </div>
 
            {/* Menu Items */}
-            <div className="flex flex-col">
+            <div className="flex flex-col items-center">
               {menuItems.map((item, index) => (
                 <button
                   key={index}
@@ -141,22 +141,22 @@ const menuItems = [
 
         {/* Desktop Icons */}
         <div className="hidden md:flex items-center gap-4 relative">
-          <button className="relative">
-            <FaEnvelope className="text-xl" />
+          <button className="relative cursor-pointer">
+            <FaEnvelope className="text-2xl" />
             <span className="absolute -top-1 -right-2 bg-red-500 text-xs px-1 rounded-full"></span>
           </button>
 
           {/* Notification Bell */}
           <div ref={notificationRef} className="relative">
             <button
-              className="relative"
+              className="relative cursor-pointer"
               onClick={() => {
                 setNotificationOpen(!isNotificationOpen);
                 setProfileMenuOpen(false);
                 setSideMenuOpen(false);
               }}
             >
-              <FaBell className="text-xl" />
+              <FaBell className="text-2xl mt-1"  />
               <span className="absolute -top-1 -right-2 bg-red-500 text-xs px-1 rounded-full"></span>
             </button>
 
@@ -184,7 +184,7 @@ const menuItems = [
           {/* Profile */}
           <div ref={profileMenuRef} className="relative">
             <button
-              className="text-xl"
+              className="text-2xl cursor-pointer"
               onClick={() => {
                 setProfileMenuOpen(!isProfileMenuOpen);
                 setNotificationOpen(false);
