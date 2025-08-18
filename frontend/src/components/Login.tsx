@@ -45,7 +45,7 @@ function Login({ setToken }: LoginProps) {
   return (
     <div className="flex min-h-screen">
       {/* Left side - Blue Panel */}
-      <div className="hidden md:flex w-1/2 flex-col justify-center px-12 bg-gradient-to-br from-blue-400 to-indigo-500 text-black">
+      <div className="hidden md:flex w-1/2 flex-col justify-center px-12 bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
         <div>
           <img
             src="https://companieslogo.com/img/orig/JSWENERGY.NS-b8b0c8f8.png?t=1731039532"
