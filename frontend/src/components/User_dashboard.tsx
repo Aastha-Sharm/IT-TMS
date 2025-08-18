@@ -132,14 +132,14 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="bg-white min-h-screen p-8">
-      <h1 className="text-3xl bg-gradient-to-r from-sky-400 to-emerald-300 h-12 font-bold text-gray-800 mb-8 px-1 py-1">Ticket Dashboard</h1>
+      <h1 className="text-3xl width-full h-12 font-bold text-gray-800 mb-10 px-1 py-1">Ticket Dashboard</h1>
 
       {/* Charts */}
       <div className="flex flex-wrap justify-center gap-6 mb-10">
-        <ProgressCircle label="Open" current={countOpen} total={totalTickets} color="#FF5089" />
-        <ProgressCircle label="In Progress" current={countInProgress} total={totalTickets} color="#FF1659" />
-        <ProgressCircle label="Resolved" current={countResolved} total={totalTickets} color="#16A34A" />
-        <ProgressCircle label="Unresolved" current={countUnresolved} total={totalTickets} color="#EAB308" />
+        <ProgressCircle label="Open" current={countOpen} total={totalTickets} color="#3617a7ff" />
+        <ProgressCircle label="In Progress" current={countInProgress} total={totalTickets} color="#3617a7ff" />
+        <ProgressCircle label="Resolved" current={countResolved} total={totalTickets} color="#3617a7ff" />
+        <ProgressCircle label="Unresolved" current={countUnresolved} total={totalTickets} color="#3617a7ff" />
       </div>
 
       {/* Controls Row (Show Entries + Search) */}

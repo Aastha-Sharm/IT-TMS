@@ -12,7 +12,7 @@ import Signup from "./components/Signup";
 // import Home from "./components/Home";
 import Ticket_raise from "./components/Ticket_raise";
 import User_dashboard from "./components/User_dashboard";
-// import TicketDetails from "./components/TicketDetails";
+import TicketDetails from "./components/TicketDetails";
 import Footer from "./components/Footer";  // import Footer
 
 const PrivateRoute = ({ children }: { children: ReactNode }) => {
@@ -46,10 +46,22 @@ const App: React.FC = () => {
               path="/"
               element={
                 <PrivateRoute>
-                  <Ticket_raise />
-                </PrivateRoute>
-              }
-            />
+                <TicketDetails
+                    id={101}
+                    title="Unable to access VPN"
+                    description="I am unable to connect to the company VPN from home. It shows authentication failed even with correct credentials."
+                    created_by="Aastha Sharma"
+                    category="Network"
+                    priority="High"
+                    status="Open"
+                    created_at="2025-08-18 09:45 AM"
+                    response="Our IT team is checking the VPN server issue. Please try again in 30 minutes."
+                    onClose={() => alert("Ticket Closed!")}
+                    onDelete={() => alert("Ticket Deleted!")}
+                  />
+                        </PrivateRoute>
+                      }
+                    />
             <Route path="*" element={<Navigate to={token ? "/" : "/login"} />} />
           </Routes>
         </main>
