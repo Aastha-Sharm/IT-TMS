@@ -69,12 +69,13 @@ const TicketForm: React.FC = () => {
   };
 
   const inputClasses =
-    "w-full border bg-blue-100 border-gray-300 rounded-lg px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200";
-  const labelClasses = "block text-gray-700 font-semibold mb-1";
+    "w-full border bg-blue-50 border-gray-300 rounded-lg px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200";
+  const labelClasses = "block text-gray-700 font-semibold mb-1 ";
+  const optionClasses = "bg-gray-50"
 
   return (
     <div className="max-w-4xl mx-auto p-8">
-      <h2 className="text-3xl h-12 font-bold text-center text-gray-800 mb-8">
+      <h2 className="text-4xl h-12 font-bold text-center text-black-500 mb-8  bg-clip-text drop-shadow-xl tracking-wide">   
         Create New Ticket
       </h2>
 
@@ -93,8 +94,8 @@ const TicketForm: React.FC = () => {
             }}
             className={inputClasses}
           >
-            <option value="Service">Service</option>
-            <option value="Asset">Asset</option>
+            <option className={optionClasses} value="Service">Service</option>
+            <option className={optionClasses} value="Asset">Asset</option>
           </select>
         </div>
 
@@ -106,10 +107,10 @@ const TicketForm: React.FC = () => {
             onChange={(e) => setCategory(e.target.value)}
             className={inputClasses}
           >
-            <option value="">Select Category</option>
+            
             {(type === "Service" ? serviceCategories : assetCategories).map(
               (cat) => (
-                <option key={cat} value={cat}>
+                <option className={optionClasses} key={cat} value={cat}>
                   {cat}
                 </option>
               )
@@ -125,9 +126,9 @@ const TicketForm: React.FC = () => {
             onChange={(e) => setPriority(e.target.value)}
             className={inputClasses}
           >
-            <option value="Low">Low</option>
-            <option value="Medium">Medium</option>
-            <option value="High">High</option>
+            <option className={optionClasses} value="Low">Low</option>
+            <option className={optionClasses} value="Medium">Medium</option>
+            <option className={optionClasses} value="High">High</option>
           </select>
         </div>
 
