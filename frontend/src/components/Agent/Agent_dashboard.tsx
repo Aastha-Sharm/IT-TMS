@@ -90,35 +90,7 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Show tickets when a category is clicked */}
-      {selectedType && (
-        <div>
-          <h2 className="text-2xl font-bold mb-4">{selectedType} Tickets</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {ticketsData
-              .filter(ticket => ticket.type === selectedType)
-              .map(ticket => (
-                <div
-                  key={ticket.id}
-                  className="bg-gray-100 p-6 rounded-lg shadow-md"
-                >
-                  <h3 className="text-lg font-semibold mb-2">{ticket.title}</h3>
-                  <p className="text-gray-600 mb-2">{ticket.description}</p>
-                  <p className="text-sm">
-                    <span className="font-semibold">Priority:</span> {ticket.priority}
-                  </p>
-                  <p className="text-sm">
-                    <span className="font-semibold">Status:</span> {ticket.status}
-                  </p>
-                  <p className="text-sm">
-                    <span className="font-semibold">Response:</span> {ticket.agentResponse}
-                  </p>
-                </div>
-              ))}
-          </div>
-        </div>
-      )}
-    </div>
+      </div>
   );
 };
 

@@ -129,7 +129,7 @@ const menuItems = [
           />
         </div>
 
-        {/* Search */}
+        {/* Search
         <div className="hidden sm:flex items-center bg-white text-black rounded-full px-3 py-1 w-72">
           <FaSearch className="text-gray-500 mr-2" />
           <input
@@ -137,7 +137,7 @@ const menuItems = [
             placeholder="Search…"
             className="flex-1 outline-none"
           />
-        </div>
+        </div> */}
 
         {/* Desktop Icons */}
         <div className="hidden md:flex items-center gap-4 relative">
