@@ -129,8 +129,8 @@ const menuItems = [
           />
         </div>
 
-        {/* Search */}
-        {/* <div className="hidden sm:flex items-center bg-white text-black rounded-full px-3 py-1 w-72">
+        {/* Search
+        <div className="hidden sm:flex items-center bg-white text-black rounded-full px-3 py-1 w-72">
           <FaSearch className="text-gray-500 mr-2" />
           <input
             type="text"
