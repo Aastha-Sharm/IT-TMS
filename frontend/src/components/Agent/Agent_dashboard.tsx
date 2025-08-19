@@ -26,7 +26,6 @@ const Dashboard: React.FC = () => {
     { id: 5, type: "Asset", title: "Export bug", description: "CSV empty file.", status: "Assigned", priority: "High", agentResponse: "Working on fix." },
   ];
 
-  // State for which category is selected
   const [selectedType, setSelectedType] = useState<"Service" | "Asset" | null>(null);
 
   const totalTickets = ticketsData.length;
@@ -40,57 +39,82 @@ const Dashboard: React.FC = () => {
   const countUnresolved = ticketsData.filter(t => unresolvedStatuses.includes(t.status)).length;
 
   return (
-    <div className="bg-white min-h-screen p-8">
-      <h1 className="text-3xl font-bold text-gray-800 mb-10">Agent Dashboard</h1>
+    <div className="bg-gray-50 min-h-screen p-8">
+      <h1 className="text-4xl font-bold text-gray-800 mb-10 text-center">
+         Agent Dashboard
+      </h1>
 
-      {/* Value Cards */}
+      {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-        <div className="bg-blue-100 shadow rounded-xl p-6 text-center">
+        <div className="bg-blue-50 hover:bg-blue-100 shadow-md p-6 text-center transition">
           <h2 className="text-lg font-semibold text-gray-700">Open</h2>
-          <p className="text-3xl font-bold text-blue-700">{countOpen}</p>
-          <p className="text-sm text-gray-500">of {totalTickets}</p>
+          <p className="text-4xl font-bold text-blue-700">{countOpen}</p>
+          <p className="text-sm text-gray-500">of {totalTickets} Tickets</p>
         </div>
-        <div className="bg-yellow-100 shadow rounded-xl p-6 text-center">
+        <div className="bg-yellow-50 hover:bg-yellow-100 shadow-md p-6 text-center transition">
           <h2 className="text-lg font-semibold text-gray-700">In Progress</h2>
-          <p className="text-3xl font-bold text-yellow-700">{countInProgress}</p>
-          <p className="text-sm text-gray-500">of {totalTickets}</p>
+          <p className="text-4xl font-bold text-yellow-600">{countInProgress}</p>
+          <p className="text-sm text-gray-500">of {totalTickets} Tickets</p>
         </div>
-        <div className="bg-green-100 shadow rounded-xl p-6 text-center">
+        <div className="bg-green-50 hover:bg-green-100 shadow-md p-6 text-center transition">
           <h2 className="text-lg font-semibold text-gray-700">Resolved</h2>
-          <p className="text-3xl font-bold text-green-700">{countResolved}</p>
-          <p className="text-sm text-gray-500">of {totalTickets}</p>
+          <p className="text-4xl font-bold text-green-600">{countResolved}</p>
+          <p className="text-sm text-gray-500">of {totalTickets} Tickets</p>
         </div>
-        <div className="bg-red-100 shadow rounded-xl p-6 text-center">
+        <div className="bg-red-50 hover:bg-red-100 shadow-md p-6 text-center transition">
           <h2 className="text-lg font-semibold text-gray-700">Unresolved</h2>
-          <p className="text-3xl font-bold text-red-700">{countUnresolved}</p>
-          <p className="text-sm text-gray-500">of {totalTickets}</p>
+          <p className="text-4xl font-bold text-red-600">{countUnresolved}</p>
+          <p className="text-sm text-gray-500">of {totalTickets} Tickets</p>
         </div>
       </div>
 
-      {/* Two Category Cards */}
-      <div className="flex justify-center gap-6 mb-8">
+      {/* Category Selector */}
+      <div className="flex flex-col sm:flex-row justify-center gap-8">
+        {/* Service Tickets Card */}
         <div
           onClick={() => setSelectedType("Service")}
-          className={`w-1/2 cursor-pointer bg-blue-50 p-6 rounded-lg shadow-md hover:shadow-lg transition ${
-            selectedType === "Service" ? "border-2 border-blue-500" : ""
+          className={`flex-1 cursor-pointer bg-white border shadow-md p-6 hover:shadow-xl transition transform hover:-translate-y-1 ${
+            selectedType === "Service" ? "border-blue-500" : "border-gray-200"
           }`}
         >
-          <h2 className="text-xl font-semibold mb-2 text-blue-700">Service Tickets</h2>
-          <p className="text-gray-600">{ticketsData.filter(t => t.type === "Service").length} Tickets</p>
+          <h2 className="text-2xl font-semibold mb-2 text-center text-blue-600">
+            Service Tickets
+          </h2>
+          <p className="text-gray-600 text-center mb-4">
+            {ticketsData.filter((t) => t.type === "Service").length} Tickets
+          </p>
+
+          <div className="text-sm text-gray-700 space-y-2">
+            <p><span className="font-semibold">Open:</span> {ticketsData.filter((t) => t.type === "Service" && openStatuses.includes(t.status)).length}</p>
+            <p><span className="font-semibold">In Progress:</span> {ticketsData.filter((t) => t.type === "Service" && t.status === "In Progress").length}</p>
+            <p><span className="font-semibold">Resolved:</span> {ticketsData.filter((t) => t.type === "Service" && resolvedStatuses.includes(t.status)).length}</p>
+            <p><span className="font-semibold">Unresolved:</span> {ticketsData.filter((t) => t.type === "Service" && unresolvedStatuses.includes(t.status)).length}</p>
+          </div>
         </div>
 
+        {/* Asset Tickets Card */}
         <div
           onClick={() => setSelectedType("Asset")}
-          className={`w-1/2 cursor-pointer bg-green-50 p-6 rounded-lg shadow-md hover:shadow-lg transition ${
-            selectedType === "Asset" ? "border-2 border-green-500" : ""
+          className={`flex-1 cursor-pointer bg-white border shadow-md p-6 hover:shadow-xl transition transform hover:-translate-y-1 ${
+            selectedType === "Asset" ? "border-green-500" : "border-gray-200"
           }`}
         >
-          <h2 className="text-xl font-semibold mb-2 text-green-700">Asset Tickets</h2>
-          <p className="text-gray-600">{ticketsData.filter(t => t.type === "Asset").length} Tickets</p>
+          <h2 className="text-2xl font-semibold text-center mb-2 text-green-600">
+            Asset Tickets
+          </h2>
+          <p className="text-gray-600 text-center mb-4">
+            {ticketsData.filter((t) => t.type === "Asset").length} Tickets
+          </p>
+
+          <div className="text-sm text-gray-700 space-y-2">
+            <p><span className="font-semibold">Open:</span> {ticketsData.filter((t) => t.type === "Asset" && openStatuses.includes(t.status)).length}</p>
+            <p><span className="font-semibold">In Progress:</span> {ticketsData.filter((t) => t.type === "Asset" && t.status === "In Progress").length}</p>
+            <p><span className="font-semibold">Resolved:</span> {ticketsData.filter((t) => t.type === "Asset" && resolvedStatuses.includes(t.status)).length}</p>
+            <p><span className="font-semibold">Unresolved:</span> {ticketsData.filter((t) => t.type === "Asset" && unresolvedStatuses.includes(t.status)).length}</p>
+          </div>
         </div>
       </div>
-
-      </div>
+    </div>
   );
 };
 
