@@ -68,7 +68,7 @@ const Layout: React.FC<{
                   category="IT Assets"
                   onUpdate={() => {}}
                 /> */}
-                <Agent_dashboard />
+                <User_dashboard />
               </PrivateRoute>
             }
           />

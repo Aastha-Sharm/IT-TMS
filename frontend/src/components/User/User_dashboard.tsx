@@ -146,8 +146,9 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* Controls Row (Show Entries + Search) */}
-      <div className="flex justify-between items-center mb-3">
+      <div className="flex justify-between items-center mb-3 ">
         {/* Show Entries */}
+        
         <div className="inline-flex items-center gap-2 border border-gray-300 rounded-md px-3 py-2 bg-white shadow-sm">
           <label htmlFor="entries" className="text-sm text-gray-700">Show</label>
           <select
@@ -165,12 +166,16 @@ const Dashboard: React.FC = () => {
 
         {/* Search Box */}
         <div className="inline-flex items-center bg-white border border-gray-300 gap-2 rounded-md px-3 py-2 shadow-sm">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M18.5 18.5L21 21" stroke="black" stroke-width="null" stroke-linecap="round" className="my-path"></path>
+        <path d="M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z" stroke="black" stroke-width="null" className="my-path"></path>
+        </svg>
           <input
             type="text"
             placeholder="Search by title..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
+            className=" px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
           />
         </div>
       </div>
