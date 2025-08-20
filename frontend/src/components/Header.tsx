@@ -235,10 +235,10 @@ const menuItems = [
       {/* Mobile Menu Dropdown */}
       {isMobileMenuOpen && (
         <div className="md:hidden bg-white text-black shadow-lg">
-          <button className="flex items-center px-4 py-2 hover:bg-gray-100 w-full">
+          {/* <button className="flex items-center px-4 py-2 hover:bg-gray-100 w-full">
             <FaEnvelope className="mr-2" /> Messages
             <span className="ml-auto bg-red-500 text-white text-xs px-2 rounded-full"></span>
-          </button>
+          </button> */}
           <button className="flex items-center px-4 py-2 hover:bg-gray-100 w-full">
             <FaBell className="mr-2" /> Notifications
             <span className="ml-auto bg-red-500 text-white text-xs px-2 rounded-full"></span>

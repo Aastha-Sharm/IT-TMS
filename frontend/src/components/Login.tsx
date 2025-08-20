@@ -61,11 +61,6 @@ function Login({ setToken }: LoginProps) {
       {/* Right side - Login Form */}
       <div className="flex w-full md:w-1/2 flex-col justify-center px-6 py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-          <img
-            alt=""
-            src="https://companieslogo.com/img/orig/JSWENERGY.NS-b8b0c8f8.png?t=1731039532"
-            className="mx-auto h-10 w-auto md:hidden"
-          />
           <h2 className="mt-10 text-center text-2xl font-bold tracking-tight text-gray-900">
             Sign in to your account
           </h2>
