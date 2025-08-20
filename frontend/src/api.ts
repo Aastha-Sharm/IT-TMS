@@ -40,7 +40,8 @@ export const loginUser = async (data: LoginData): Promise<TokenResponse> => {
   return response.data;
 };
 
-// Ticket creation API
+// Ticket creation API (fixed for file upload + error logging)
+// Ticket creation API (JSON version, no files)
 export const createTicket = async (
   token: string,
   data: {
@@ -49,21 +50,32 @@ export const createTicket = async (
     priority: string;
     title: string;
     description: string;
-    files: File[];
   }
 ) => {
-  console.log("Ticket payload:", data);
+  try {
+    const response = await axios.post(
+      `${API_URL}/tickets/`,
+      {
+        type: data.type,
+        category: data.category,
+        priority: data.priority,
+        title: data.title,
+        description: data.description,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
-  const response = await axios.post(`${API_URL}/tickets/`, data, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-  });
-
-  return response.data;
+    return response.data;
+  } catch (error: any) {
+    console.error("Error creating ticket:", error.response?.data || error.message);
+    throw new Error(error.response?.data?.detail || "Error creating ticket");
+  }
 };
-
 
 export interface Ticket {
   id: number;
