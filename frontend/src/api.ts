@@ -57,16 +57,6 @@ export const createTicket = async (
     files: File[];
   }
 ) => {
-  // const formData = new FormData();
-  // formData.append("type", data.type);
-  // formData.append("category", data.category);
-  // formData.append("priority", data.priority);
-  // formData.append("title", data.title);
-  // formData.append("description", data.description);
-
-  // data.files.forEach((file) => {
-  //   formData.append("files", file);
-  // });
 console.log("Ticket payload:", data);
 
   const response = await axios.post("http://localhost:8000/tickets/", data, {
@@ -76,5 +66,32 @@ console.log("Ticket payload:", data);
     },
   });
 
+  return response.data;
+};
+
+
+export interface Ticket {
+  id: number;
+  type: string;
+  title: string;
+  description: string;
+  status:
+    | "Open"
+    | "Assigned"
+    | "Reopened"
+    | "In Progress"
+    | "Resolved"
+    | "Closed"
+    | "Not Resolved";
+  priority: "Low" | "Medium" | "High";
+  agentResponse: string | null;
+}
+
+export const getTickets = async (token: string): Promise<Ticket[]> => {
+  const response = await axios.get(`${API_URL}/tickets/`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
   return response.data;
 };

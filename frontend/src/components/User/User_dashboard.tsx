@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { ChevronUpIcon, ChevronDownIcon, ArrowsUpDownIcon } from "@heroicons/react/24/solid";
+import {
+  ChevronUpIcon,
+  ChevronDownIcon,
+  ArrowsUpDownIcon,
+} from "@heroicons/react/24/solid";
+import { getTickets, type Ticket } from "../../api"; // ✅ import Ticket + API
 
 interface ProgressCircleProps {
   label: string;
@@ -8,7 +13,12 @@ interface ProgressCircleProps {
   color: string;
 }
 
-const ProgressCircle: React.FC<ProgressCircleProps> = ({ label, current, total, color }) => {
+const ProgressCircle: React.FC<ProgressCircleProps> = ({
+  label,
+  current,
+  total,
+  color,
+}) => {
   const [progress, setProgress] = useState<number>(0);
 
   useEffect(() => {
@@ -28,48 +38,45 @@ const ProgressCircle: React.FC<ProgressCircleProps> = ({ label, current, total, 
           height: "6rem",
           background: `radial-gradient(closest-side, #fff 79%, transparent 80% 100%), 
                        conic-gradient(${color} ${progress}%, #e5e7eb 0)`,
-          transition: "background 1s ease-in-out"
+          transition: "background 1s ease-in-out",
         }}
       >
-        <span className="text-lg font-semibold">{current}/{total}</span>
+        <span className="text-lg font-semibold">
+          {current}/{total}
+        </span>
       </div>
-      <p className="mt-3 text-sm font-medium text-gray-700 uppercase tracking-wide">{label}</p>
+      <p className="mt-3 text-sm font-medium text-gray-700 uppercase tracking-wide">
+        {label}
+      </p>
     </div>
   );
 };
 
-interface Ticket {
-  id: number;
-  type: "Service" | "Asset";
-  title: string;
-  description: string;
-  status:
-    | "Created"
-    | "Assigned"
-    | "Reopened"
-    | "In Progress"
-    | "Resolved"
-    | "Closed"
-    | "Not Resolved";
-  priority: "Low" | "Medium" | "High";
-  agentResponse: string;
-}
-
 const Dashboard: React.FC = () => {
-  const ticketsData: Ticket[] = [
-    { id: 1, type: "Service", title: "Login issue", description: "User unable to log in.", status: "Created", priority: "High", agentResponse: "Checking logs." },
-    { id: 2, type: "Service", title: "Page slow", description: "Dashboard slow loading.", status: "In Progress", priority: "Medium", agentResponse: "Optimizing queries." },
-    { id: 3, type: "Asset", title: "Email not sent", description: "SMTP server failing.", status: "Resolved", priority: "High", agentResponse: "SMTP restarted." },
-    { id: 4, type: "Service", title: "UI misalignment", description: "Alignment issue.", status: "Not Resolved", priority: "Low", agentResponse: "Next UI patch." },
-    { id: 5, type: "Asset", title: "Export bug", description: "CSV empty file.", status: "Assigned", priority: "High", agentResponse: "Working on fix." },
-    { id: 6, type: "Service", title: "Downtime", description: "Server downtime.", status: "Reopened", priority: "High", agentResponse: "Investigating logs." },
-    { id: 7, type: "Asset", title: "Security patch", description: "Update applied.", status: "Closed", priority: "Medium", agentResponse: "Patch verified." }
-  ];
-
-  const [tickets, setTickets] = useState<Ticket[]>(ticketsData);
-  const [sortConfig, setSortConfig] = useState<{ key: keyof Ticket; direction: "asc" | "desc" | null }>({ key: "type", direction: null });
+  const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [sortConfig, setSortConfig] = useState<{
+    key: keyof Ticket;
+    direction: "asc" | "desc" | null;
+  }>({ key: "type", direction: null });
   const [entriesToShow, setEntriesToShow] = useState<number>(5);
   const [searchTerm, setSearchTerm] = useState<string>("");
+
+  // ✅ Fetch tickets from backend
+  useEffect(() => {
+    const fetchTickets = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      try {
+        const data = await getTickets(token);
+        setTickets(data);
+      } catch (error) {
+        console.error("Error fetching tickets:", error);
+      }
+    };
+
+    fetchTickets();
+  }, []);
 
   const handleSort = (key: keyof Ticket) => {
     let direction: "asc" | "desc" | null = "asc";
@@ -93,32 +100,38 @@ const Dashboard: React.FC = () => {
             : priorityOrder[b.priority] - priorityOrder[a.priority];
         } else {
           return a[key] > b[key]
-            ? direction === "asc" ? 1 : -1
+            ? direction === "asc"
+              ? 1
+              : -1
             : a[key] < b[key]
-            ? direction === "asc" ? -1 : 1
+            ? direction === "asc"
+              ? -1
+              : 1
             : 0;
         }
       });
       setTickets(sorted);
-    } else {
-      setTickets(ticketsData);
     }
   };
 
   // Filter tickets based on search term
-  const filteredTickets = tickets.filter(ticket =>
+  const filteredTickets = tickets.filter((ticket) =>
     ticket.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const totalTickets = ticketsData.length;
+  const totalTickets = tickets.length;
   const openStatuses = ["Created", "Assigned", "Reopened"];
   const resolvedStatuses = ["Resolved", "Closed"];
   const unresolvedStatuses = ["Not Resolved"];
 
-  const countOpen = ticketsData.filter(t => openStatuses.includes(t.status)).length;
-  const countInProgress = ticketsData.filter(t => t.status === "In Progress").length;
-  const countResolved = ticketsData.filter(t => resolvedStatuses.includes(t.status)).length;
-  const countUnresolved = ticketsData.filter(t => unresolvedStatuses.includes(t.status)).length;
+  const countOpen = tickets.filter((t) => openStatuses.includes(t.status)).length;
+  const countInProgress = tickets.filter((t) => t.status === "In Progress").length;
+  const countResolved = tickets.filter((t) =>
+    resolvedStatuses.includes(t.status)
+  ).length;
+  const countUnresolved = tickets.filter((t) =>
+    unresolvedStatuses.includes(t.status)
+  ).length;
 
   const renderSortIcon = (column: keyof Ticket) => {
     if (sortConfig.key !== column || sortConfig.direction === null) {
@@ -133,24 +146,44 @@ const Dashboard: React.FC = () => {
   return (
     <div className="bg-white min-h-screen p-8">
       <h1 className="text-4xl font-bold bg-clip-text text-black-500 drop-shadow-md tracking-wide mb-10">
-  Ticket Dashboard
-</h1>
-
+        Ticket Dashboard
+      </h1>
 
       {/* Charts */}
       <div className="flex flex-wrap justify-center gap-6 mb-10">
-        <ProgressCircle label="Open" current={countOpen} total={totalTickets} color="#3617a7ff" />
-        <ProgressCircle label="In Progress" current={countInProgress} total={totalTickets} color="#3617a7ff" />
-        <ProgressCircle label="Resolved" current={countResolved} total={totalTickets} color="#3617a7ff" />
-        <ProgressCircle label="Unresolved" current={countUnresolved} total={totalTickets} color="#3617a7ff" />
+        <ProgressCircle
+          label="Open"
+          current={countOpen}
+          total={totalTickets}
+          color="#3617a7ff"
+        />
+        <ProgressCircle
+          label="In Progress"
+          current={countInProgress}
+          total={totalTickets}
+          color="#3617a7ff"
+        />
+        <ProgressCircle
+          label="Resolved"
+          current={countResolved}
+          total={totalTickets}
+          color="#3617a7ff"
+        />
+        <ProgressCircle
+          label="Unresolved"
+          current={countUnresolved}
+          total={totalTickets}
+          color="#3617a7ff"
+        />
       </div>
 
       {/* Controls Row (Show Entries + Search) */}
       <div className="flex justify-between items-center mb-3 ">
         {/* Show Entries */}
-        
         <div className="inline-flex items-center gap-2 border border-gray-300 rounded-md px-3 py-2 bg-white shadow-sm">
-          <label htmlFor="entries" className="text-sm text-gray-700">Show</label>
+          <label htmlFor="entries" className="text-sm text-gray-700">
+            Show
+          </label>
           <select
             id="entries"
             value={entriesToShow}
@@ -166,10 +199,25 @@ const Dashboard: React.FC = () => {
 
         {/* Search Box */}
         <div className="inline-flex items-center bg-white border border-gray-300 gap-2 rounded-md px-3 py-2 shadow-sm">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M18.5 18.5L21 21" stroke="black" stroke-width="null" stroke-linecap="round" className="my-path"></path>
-        <path d="M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z" stroke="black" stroke-width="null" className="my-path"></path>
-        </svg>
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M18.5 18.5L21 21"
+              stroke="black"
+              strokeLinecap="round"
+              className="my-path"
+            ></path>
+            <path
+              d="M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z"
+              stroke="black"
+              className="my-path"
+            ></path>
+          </svg>
           <input
             type="text"
             placeholder="Search by title..."
@@ -181,7 +229,6 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* Table */}
-            {/* Table */}
       <div className="bg-white rounded-lg shadow-lg overflow-hidden">
         <div
           className={`overflow-y-auto ${
@@ -223,10 +270,7 @@ const Dashboard: React.FC = () => {
             </thead>
             <tbody>
               {filteredTickets.slice(0, entriesToShow).map((ticket) => (
-                <tr
-                  key={ticket.id}
-                  className="border-b hover:bg-gray-50"
-                >
+                <tr key={ticket.id} className="border-b hover:bg-gray-50">
                   <td className="px-6 py-4">{ticket.id}</td>
                   <td className="px-6 py-4">{ticket.type}</td>
                   <td className="px-6 py-4 font-medium">{ticket.title}</td>
