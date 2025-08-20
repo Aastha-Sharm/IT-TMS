@@ -1,5 +1,4 @@
 import React, { useState, useRef } from "react";
-import { createTicket } from "../../api";
 
 const TicketForm: React.FC = () => {
   const [type, setType] = useState<string>("Service");
