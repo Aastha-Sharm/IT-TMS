@@ -1,6 +1,7 @@
 import { useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { signupUser } from "../api"; // adjust path if needed
+import type { SignupData, TokenResponse } from "../api";
 
 interface SignupProps {
   setToken: React.Dispatch<React.SetStateAction<string | null>>;
@@ -15,25 +16,27 @@ function Signup({ setToken }: SignupProps) {
     e.preventDefault();
 
     try {
-      const response = await axios.post("http://localhost:8000/auth/signup", {
+      const payload: SignupData = {
         username: email.split("@")[0],
-        email: email,
-        password: password,
+        email,
+        password,
         role: "user",
-      });
+      };
+
+      const response: TokenResponse | any = await signupUser(payload);
 
       alert("Signup successful!");
-      console.log(response.data);
+      console.log("Signup response:", response);
 
-      if (response.data.access_token) {
-        localStorage.setItem("token", response.data.access_token);
-        setToken(response.data.access_token);
+      if (response?.access_token) {
+        localStorage.setItem("token", response.access_token);
+        setToken(response.access_token);
         navigate("/");
       } else {
         navigate("/login");
       }
     } catch (error: any) {
-      console.error(error);
+      console.error("Signup failed:", error.response?.data || error.message);
       alert(error.response?.data?.detail || "Signup failed");
     }
   };

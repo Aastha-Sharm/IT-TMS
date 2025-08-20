@@ -19,33 +19,28 @@ export interface TokenResponse {
   token_type: string;
 }
 
+// Signup API
 export const signupUser = async (data: SignupData) => {
   const response = await axios.post(`${API_URL}/auth/signup`, data);
   return response.data;
 };
 
-export const loginUser = async (
-  data: LoginData
-): Promise<TokenResponse> => {
-  // Must send as form-urlencoded
+// Login API
+export const loginUser = async (data: LoginData): Promise<TokenResponse> => {
   const formData = new URLSearchParams();
   formData.append("username", data.email.trim()); // OAuth2PasswordRequestForm requires `username`
   formData.append("password", data.password.trim());
 
-  const response = await axios.post(
-    `${API_URL}/auth/login`,
-    formData,
-    {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-    }
-  );
+  const response = await axios.post(`${API_URL}/auth/login`, formData, {
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+  });
 
   return response.data;
 };
 
-
+// Ticket creation API
 export const createTicket = async (
   token: string,
   data: {
@@ -57,9 +52,9 @@ export const createTicket = async (
     files: File[];
   }
 ) => {
-console.log("Ticket payload:", data);
+  console.log("Ticket payload:", data);
 
-  const response = await axios.post("http://localhost:8000/tickets/", data, {
+  const response = await axios.post(`${API_URL}/tickets/`, data, {
     headers: {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
