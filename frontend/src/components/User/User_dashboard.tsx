@@ -1,56 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import {
   ChevronUpIcon,
   ChevronDownIcon,
   ArrowsUpDownIcon,
 } from "@heroicons/react/24/solid";
-import { getTickets, type Ticket } from "../../api"; // ✅ import Ticket + API
-
-interface ProgressCircleProps {
-  label: string;
-  current: number;
-  total: number;
-  color: string;
-}
-
-const ProgressCircle: React.FC<ProgressCircleProps> = ({
-  label,
-  current,
-  total,
-  color,
-}) => {
-  const [progress, setProgress] = useState<number>(0);
-
-  useEffect(() => {
-    const percentage = total > 0 ? (current / total) * 100 : 0;
-    const timeout = setTimeout(() => {
-      setProgress(percentage);
-    }, 100);
-    return () => clearTimeout(timeout);
-  }, [current, total]);
-
-  return (
-    <div className="flex flex-col items-center bg-white shadow-md rounded-xl p-5 w-40">
-      <div
-        className="flex items-center justify-center rounded-full shadow-inner"
-        style={{
-          width: "6rem",
-          height: "6rem",
-          background: `radial-gradient(closest-side, #fff 79%, transparent 80% 100%), 
-                       conic-gradient(${color} ${progress}%, #e5e7eb 0)`,
-          transition: "background 1s ease-in-out",
-        }}
-      >
-        <span className="text-lg font-semibold">
-          {current}/{total}
-        </span>
-      </div>
-      <p className="mt-3 text-sm font-medium text-gray-700 uppercase tracking-wide">
-        {label}
-      </p>
-    </div>
-  );
-};
+import { getTickets, type Ticket } from "../../api";
+import ProgressCircle from "../progressCircle";
 
 const Dashboard: React.FC = () => {
   const [tickets, setTickets] = useState<Ticket[]>([]);
@@ -61,12 +16,11 @@ const Dashboard: React.FC = () => {
   const [entriesToShow, setEntriesToShow] = useState<number>(5);
   const [searchTerm, setSearchTerm] = useState<string>("");
 
-  // ✅ Fetch tickets from backend
+  // ✅ Fetch tickets
   useEffect(() => {
     const fetchTickets = async () => {
       const token = localStorage.getItem("token");
       if (!token) return;
-
       try {
         const data = await getTickets(token);
         setTickets(data);
@@ -74,237 +28,162 @@ const Dashboard: React.FC = () => {
         console.error("Error fetching tickets:", error);
       }
     };
-
     fetchTickets();
   }, []);
 
+  // ✅ Sorting helper
   const handleSort = (key: keyof Ticket) => {
     let direction: "asc" | "desc" | null = "asc";
-    if (sortConfig.key === key && sortConfig.direction === "asc") {
-      direction = "desc";
-    } else if (sortConfig.key === key && sortConfig.direction === "desc") {
-      direction = null; // reset
-    }
+    if (sortConfig.key === key && sortConfig.direction === "asc") direction = "desc";
+    else if (sortConfig.key === key && sortConfig.direction === "desc") direction = null;
     setSortConfig({ key, direction });
-
-    if (direction) {
-      const sorted = [...tickets].sort((a, b) => {
-        if (key === "priority") {
-          const priorityOrder: Record<string, number> = {
-            Low: 1,
-            Medium: 2,
-            High: 3,
-          };
-          return direction === "asc"
-            ? priorityOrder[a.priority] - priorityOrder[b.priority]
-            : priorityOrder[b.priority] - priorityOrder[a.priority];
-        } else {
-          return a[key] > b[key]
-            ? direction === "asc"
-              ? 1
-              : -1
-            : a[key] < b[key]
-            ? direction === "asc"
-              ? -1
-              : 1
-            : 0;
-        }
-      });
-      setTickets(sorted);
-    }
   };
 
-  // Filter tickets based on search term
-  const filteredTickets = tickets.filter((ticket) =>
-    ticket.title.toLowerCase().includes(searchTerm.toLowerCase())
+ // ✅ Memoized filtered + sorted tickets
+const filteredTickets = useMemo(() => {
+  let result = tickets.filter((t) =>
+    t.title?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const totalTickets = tickets.length;
-  const openStatuses = ["Created", "Assigned", "Reopened"];
-  const resolvedStatuses = ["Resolved", "Closed"];
-  const unresolvedStatuses = ["Not Resolved"];
+  
+  if (sortConfig.direction) {
+    result = [...result].sort((a, b) => {
+      const { key, direction } = sortConfig;
 
-  const countOpen = tickets.filter((t) => openStatuses.includes(t.status)).length;
-  const countInProgress = tickets.filter((t) => t.status === "In Progress").length;
-  const countResolved = tickets.filter((t) =>
-    resolvedStatuses.includes(t.status)
-  ).length;
-  const countUnresolved = tickets.filter((t) =>
-    unresolvedStatuses.includes(t.status)
-  ).length;
+      
+      if (key === "priority") {
+        const priorityOrder: Record<string, number> = { Low: 1, Medium: 2, High: 3 };
+        return direction === "asc"
+          ? (priorityOrder[a.priority] ?? 0) - (priorityOrder[b.priority] ?? 0)
+          : (priorityOrder[b.priority] ?? 0) - (priorityOrder[a.priority] ?? 0);
+      }
 
+      const aVal = a[key] ?? "";
+      const bVal = b[key] ?? "";
+
+      if (aVal > bVal) {
+        return direction === "asc" ? 1 : -1;
+      }
+      if (aVal < bVal) {
+        return direction === "asc" ? -1 : 1;
+      }
+      return 0;
+    });
+  }
+
+  return result;
+}, [tickets, searchTerm, sortConfig]);
+
+
+  // ✅ Precompute ticket counts in ONE loop
+  const { countOpen, countInProgress, countResolved, countUnresolved } = useMemo(() => {
+    let open = 0, inProgress = 0, resolved = 0, unresolved = 0;
+    tickets.forEach((t) => {
+      if (["Created", "Assigned", "Reopened"].includes(t.status)) open++;
+      else if (t.status === "In Progress") inProgress++;
+      else if (["Resolved", "Closed"].includes(t.status)) resolved++;
+      else if (t.status === "Not Resolved") unresolved++;
+    });
+    return { countOpen: open, countInProgress: inProgress, countResolved: resolved, countUnresolved: unresolved };
+  }, [tickets]);
+
+  // ✅ Sort icon renderer
   const renderSortIcon = (column: keyof Ticket) => {
-    if (sortConfig.key !== column || sortConfig.direction === null) {
+    if (sortConfig.key !== column || sortConfig.direction === null)
       return <ArrowsUpDownIcon className="w-4 h-4 text-black" />;
-    }
-    if (sortConfig.direction === "asc") {
-      return <ChevronUpIcon className="w-4 h-4 text-blue-500" />;
-    }
-    return <ChevronDownIcon className="w-4 h-4 text-blue-500" />;
+    return sortConfig.direction === "asc"
+      ? <ChevronUpIcon className="w-4 h-4 text-blue-500" />
+      : <ChevronDownIcon className="w-4 h-4 text-blue-500" />;
   };
+
+  const totalTickets = tickets.length;
 
   return (
     <div className="bg-white min-h-screen p-8">
-      <h1 className="text-4xl font-bold bg-clip-text text-black-500 drop-shadow-md tracking-wide mb-10">
-        Ticket Dashboard
-      </h1>
+      <h1 className="text-4xl font-bold text-black drop-shadow mb-10">Ticket Dashboard</h1>
 
       {/* Charts */}
       <div className="flex flex-wrap justify-center gap-6 mb-10">
-        <ProgressCircle
-          label="Open"
-          current={countOpen}
-          total={totalTickets}
-          color="#3617a7ff"
-        />
-        <ProgressCircle
-          label="In Progress"
-          current={countInProgress}
-          total={totalTickets}
-          color="#3617a7ff"
-        />
-        <ProgressCircle
-          label="Resolved"
-          current={countResolved}
-          total={totalTickets}
-          color="#3617a7ff"
-        />
-        <ProgressCircle
-          label="Unresolved"
-          current={countUnresolved}
-          total={totalTickets}
-          color="#3617a7ff"
-        />
+        <ProgressCircle label="Open" current={countOpen} total={totalTickets} color="#3617a7ff" />
+        <ProgressCircle label="In Progress" current={countInProgress} total={totalTickets} color="#3617a7ff" />
+        <ProgressCircle label="Resolved" current={countResolved} total={totalTickets} color="#3617a7ff" />
+        <ProgressCircle label="Unresolved" current={countUnresolved} total={totalTickets} color="#3617a7ff" />
       </div>
 
-      {/* Controls Row (Show Entries + Search) */}
-      <div className="flex justify-between items-center mb-3 ">
+      {/* Controls */}
+      <div className="flex justify-between items-center mb-3">
         {/* Show Entries */}
-        <div className="inline-flex items-center gap-2 border border-gray-300 rounded-md px-3 py-2 bg-white shadow-sm">
-          <label htmlFor="entries" className="text-sm text-gray-700">
-            Show
-          </label>
+        <div className="inline-flex items-center gap-2 border rounded-md px-3 py-2 bg-white shadow-sm">
+          <label htmlFor="entries" className="text-sm">Show</label>
           <select
             id="entries"
             value={entriesToShow}
             onChange={(e) => setEntriesToShow(Number(e.target.value))}
-            className="border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="border rounded px-2 py-1 text-sm focus:ring-2 focus:ring-blue-500"
           >
             <option value={5}>5</option>
             <option value={10}>10</option>
             <option value={totalTickets}>All</option>
           </select>
-          <span className="text-sm text-gray-700">entries</span>
+          <span className="text-sm">entries</span>
         </div>
 
-        {/* Search Box */}
-        <div className="inline-flex items-center bg-white border border-gray-300 gap-2 rounded-md px-3 py-2 shadow-sm">
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M18.5 18.5L21 21"
-              stroke="black"
-              strokeLinecap="round"
-              className="my-path"
-            ></path>
-            <path
-              d="M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z"
-              stroke="black"
-              className="my-path"
-            ></path>
-          </svg>
+        {/* Search */}
+        <div className="inline-flex items-center border rounded-md px-3 py-2 shadow-sm">
           <input
             type="text"
             placeholder="Search by title..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className=" px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
+            className="px-2 py-1 text-sm focus:ring-2 focus:ring-gray-400"
           />
         </div>
       </div>
 
       {/* Table */}
       <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-        <div
-          className={`overflow-y-auto ${
-            filteredTickets.length > 5 ? "max-h-96" : ""
-          }`}
-        >
-          <table className="w-full text-sm text-left text-gray-700">
-            <thead className="bg-blue-200 text-gray-800 text-xs uppercase sticky top-0 z-10">
+        <div className={`overflow-y-auto ${filteredTickets.length > 5 ? "max-h-96" : ""}`}>
+          <table className="w-full text-sm text-left">
+            <thead className="bg-blue-200 text-xs uppercase sticky top-0">
               <tr>
                 <th className="px-6 py-3">ID</th>
-                <th
-                  className="px-6 py-3 cursor-pointer"
-                  onClick={() => handleSort("type")}
-                >
-                  <span className="inline-flex items-center gap-1">
-                    Type {renderSortIcon("type")}
-                  </span>
+                <th className="px-6 py-3 cursor-pointer" onClick={() => handleSort("type")}>
+                  <span className="inline-flex items-center gap-1">Type {renderSortIcon("type")}</span>
                 </th>
                 <th className="px-6 py-3">Title</th>
                 <th className="px-6 py-3">Description</th>
-                <th
-                  className="px-6 py-3 cursor-pointer"
-                  onClick={() => handleSort("priority")}
-                >
-                  <span className="inline-flex items-center gap-1">
-                    Priority {renderSortIcon("priority")}
-                  </span>
+                <th className="px-6 py-3 cursor-pointer" onClick={() => handleSort("priority")}>
+                  <span className="inline-flex items-center gap-1">Priority {renderSortIcon("priority")}</span>
                 </th>
-                <th
-                  className="px-6 py-3 cursor-pointer"
-                  onClick={() => handleSort("status")}
-                >
-                  <span className="inline-flex items-center gap-1">
-                    Status {renderSortIcon("status")}
-                  </span>
+                <th className="px-6 py-3 cursor-pointer" onClick={() => handleSort("status")}>
+                  <span className="inline-flex items-center gap-1">Status {renderSortIcon("status")}</span>
                 </th>
                 <th className="px-6 py-3">Agent Response</th>
               </tr>
             </thead>
             <tbody>
-              {filteredTickets.slice(0, entriesToShow).map((ticket) => (
-                <tr key={ticket.id} className="border-b hover:bg-gray-50">
-                  <td className="px-6 py-4">{ticket.id}</td>
-                  <td className="px-6 py-4">{ticket.type}</td>
-                  <td className="px-6 py-4 font-medium">{ticket.title}</td>
-                  <td className="px-6 py-4">{ticket.description}</td>
+              {filteredTickets.slice(0, entriesToShow).map((t) => (
+                <tr key={t.id} className="border-b hover:bg-gray-50">
+                  <td className="px-6 py-4">{t.id}</td>
+                  <td className="px-6 py-4">{t.type}</td>
+                  <td className="px-6 py-4 font-medium">{t.title}</td>
+                  <td className="px-6 py-4">{t.description}</td>
                   <td className="px-6 py-4">
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                        ticket.priority === "High"
-                          ? "bg-red-100 text-red-700"
-                          : ticket.priority === "Medium"
-                          ? "bg-yellow-100 text-yellow-700"
-                          : "bg-green-100 text-green-700"
-                      }`}
-                    >
-                      {ticket.priority}
-                    </span>
+                    <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                      t.priority === "High" ? "bg-red-100 text-red-700"
+                      : t.priority === "Medium" ? "bg-yellow-100 text-yellow-700"
+                      : "bg-green-100 text-green-700"
+                    }`}>{t.priority}</span>
                   </td>
                   <td className="px-6 py-4">
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                        ticket.status === "Resolved" ||
-                        ticket.status === "Closed"
-                          ? "bg-green-100 text-green-700"
-                          : ticket.status === "In Progress"
-                          ? "bg-blue-100 text-blue-700"
-                          : ticket.status === "Not Resolved"
-                          ? "bg-red-100 text-red-700"
-                          : "bg-gray-100 text-gray-700"
-                      }`}
-                    >
-                      {ticket.status}
-                    </span>
+                    <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                      ["Resolved", "Closed"].includes(t.status) ? "bg-green-100 text-green-700"
+                      : t.status === "In Progress" ? "bg-blue-100 text-blue-700"
+                      : t.status === "Not Resolved" ? "bg-red-100 text-red-700"
+                      : "bg-gray-100 text-gray-700"
+                    }`}>{t.status}</span>
                   </td>
-                  <td className="px-6 py-4">{ticket.agentResponse}</td>
+                  <td className="px-6 py-4">{t.agentResponse}</td>
                 </tr>
               ))}
             </tbody>

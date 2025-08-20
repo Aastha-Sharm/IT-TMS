@@ -12,12 +12,12 @@ import Login from "./components/Login";
 import Signup from "./components/Signup";
 import Ticket_raise from "./components/User/Ticket_raise";
 import User_dashboard from "./components/User/User_dashboard";
-import Agent_dashboard from "./components/Agent/Agent_dashboard";
+//import Agent_dashboard from "./components/Agent/Agent_dashboard";
 import Footer from "./components/Footer";
-import Asset_tickets from "./components/Agent/Asset_tickets";
-import Service_tickets from "./components/Agent/Service_tickets";
-import Service_description from "./components/Agent/Service_description";
-import Asset_description from "./components/Agent/Asset_description";
+//import Asset_tickets from "./components/Agent/Asset_tickets";
+//import Service_tickets from "./components/Agent/Service_tickets";
+//import Service_description from "./components/Agent/Service_description";
+//import Asset_description from "./components/Agent/Asset_description";
 
 const PrivateRoute: React.FC<{ children: ReactNode }> = ({ children }) => {
   const token = localStorage.getItem("token");
