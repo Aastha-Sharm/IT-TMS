@@ -1,6 +1,7 @@
 import { useState } from "react";
-import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
+import { loginUser } from "../api"; // adjust the path if api.tsx is elsewhere
+import type { TokenResponse } from "../api";
 
 interface LoginProps {
   setToken: React.Dispatch<React.SetStateAction<string | null>>;
@@ -15,25 +16,13 @@ function Login({ setToken }: LoginProps) {
     e.preventDefault();
 
     try {
-      const formData = new URLSearchParams();
-      formData.append("username", email.trim()); // Backend expects "username"
-      formData.append("password", password.trim());
+      const data: TokenResponse = await loginUser({ email, password });
 
-      const response = await axios.post(
-        "http://127.0.0.1:8000/auth/login",
-        formData,
-        {
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-        }
-      );
-
-      console.log("Login successful:", response.data);
+      console.log("Login successful:", data);
 
       // Save token
-      localStorage.setItem("token", response.data.access_token);
-      setToken(response.data.access_token);
+      localStorage.setItem("token", data.access_token);
+      setToken(data.access_token);
 
       navigate("/");
     } catch (error: any) {
@@ -61,10 +50,11 @@ function Login({ setToken }: LoginProps) {
           </p>
           <ul className="space-y-3 text-base">
             <li>✔ Track issues in one place</li>
-            {/* <li>✔ Assign tickets to your team members</li> */}
             <li>✔ Monitor progress with custom dashboards</li>
           </ul>
-          <p className="mt-10 text-sm opacity-75">© 2025 JSW. All rights reserved.</p>
+          <p className="mt-10 text-sm opacity-75">
+            © 2025 JSW. All rights reserved.
+          </p>
         </div>
       </div>
 
