@@ -153,6 +153,7 @@ const TicketForm: React.FC = () => {
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Enter ticket title"
             className={inputClasses}
+            required
           />
         </div>
 
@@ -165,6 +166,7 @@ const TicketForm: React.FC = () => {
             placeholder="Describe the issue or request in detail..."
             rows={4}
             className={`${inputClasses} rounded-lg`}
+            required
           />
         </div>
 
