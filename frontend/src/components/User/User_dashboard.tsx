@@ -6,8 +6,13 @@ import {
 } from "@heroicons/react/24/solid";
 import { getTickets, type Ticket } from "../../api";
 import ProgressCircle from "../progressCircle";
+import { useNavigate } from "react-router-dom";
+
+
+ 
 
 const Dashboard: React.FC = () => {
+  const navigate = useNavigate();
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [sortConfig, setSortConfig] = useState<{
     key: keyof Ticket;
@@ -100,7 +105,20 @@ const filteredTickets = useMemo(() => {
 
   return (
     <div className="bg-white min-h-screen p-8">
-      <h1 className="text-4xl font-bold text-black drop-shadow mb-10">Ticket Dashboard</h1>
+       <div className="flex justify-between items-center mb-10">
+      <h1 className="text-4xl font-bold text-black drop-shadow">
+        Ticket Dashboard
+      </h1>
+
+      <button
+        onClick={() => navigate("/raise-ticket")}
+        className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-lg shadow-lg transition"
+      >
+        <span className="text-xl">＋</span> Create Ticket
+      </button>
+    </div>
+
+
 
       {/* Charts */}
       <div className="flex flex-wrap justify-center gap-6 mb-10">

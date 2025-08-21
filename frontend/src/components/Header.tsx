@@ -125,7 +125,8 @@ const menuItems = [
           <img
             src="https://companieslogo.com/img/orig/JSWENERGY.NS-b8b0c8f8.png?t=1731039532"
             alt="JSW Energy Logo"
-            className="h-10 object-contain"
+            className="h-10 object-contain cursor-pointer"
+            onClick={()=>navigate("/")}
           />
         </div>
 

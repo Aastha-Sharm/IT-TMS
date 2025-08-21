@@ -3,7 +3,7 @@ import { createTicket } from "../../api";
 
 
 
-const TicketForm: React.FC = () => {
+const Ticket_raise: React.FC = () => {
   const [type, setType] = useState<string>("Service");
   const [category, setCategory] = useState<string>(""); // start as empty
   const [priority, setPriority] = useState<string>("Low");
@@ -225,4 +225,4 @@ const TicketForm: React.FC = () => {
   );
 };
 
-export default TicketForm;
+export default Ticket_raise;
