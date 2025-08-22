@@ -256,7 +256,9 @@ const Dashboard: React.FC = () => {
           <table className="w-full text-sm text-left">
             <thead className="bg-blue-200 text-xs uppercase sticky top-0">
               <tr>
-                <th className="px-6 py-3">ID</th>
+                <th className="px-6 py-3 cursor-pointer" onClick={() => handleSort("id")}>
+                  <span className="inline-flex items-center gap-1">ID {renderSortIcon("id")}</span>
+                </th>
                 <th className="px-6 py-3 cursor-pointer" onClick={() => handleSort("type")}>
                   <span className="inline-flex items-center gap-1">Type {renderSortIcon("type")}</span>
                 </th>
