@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
+import ReactApexChart from "react-apexcharts";
 import {
   ChevronUpIcon,
   ChevronDownIcon,
@@ -15,6 +16,7 @@ import {
 } from "../../api";
 import ProgressCircle from "../progressCircle";
 import { useNavigate } from "react-router-dom";
+import type { ApexOptions } from "apexcharts";
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -142,6 +144,45 @@ const Dashboard: React.FC = () => {
 
   const totalTickets = tickets.length;
 
+  // ✅ ApexCharts Config (Line chart now uses ticket counts)
+  const chartOptions: ApexOptions = {
+    chart: {
+      type: "line",
+      height: 250,
+      toolbar: { show: false },
+      zoom: { enabled: false },
+    },
+    stroke: {
+      curve: "smooth",
+      width: [4],
+    },
+    grid: {
+      borderColor: "#7a7d81ff",
+      strokeDashArray: 0,
+    },
+    dataLabels: { enabled: false },
+    xaxis: {
+      categories: ["Open", "In Progress", "Resolved", "Unresolved"],
+      labels: { style: { colors: "#ebedf1ff", fontSize: "13px" } },
+    },
+    yaxis: {
+      min: 0,
+      tickAmount: 4,
+      labels: {
+        style: { colors: "#e6e9efff", fontSize: "12px" },
+        formatter: (value: number): string => value.toString(),
+      },
+    },
+    legend: { show: false },
+  };
+
+  const chartSeries = [
+    {
+      name: "Tickets",
+      data: [countOpen, countInProgress, countResolved, countUnresolved],
+    },
+  ];
+
   return (
     <div className="bg-white min-h-screen p-8">
       <div className="flex justify-between items-center mb-10">
@@ -154,39 +195,19 @@ const Dashboard: React.FC = () => {
         </button>
       </div>
 
-      {/* Charts */}
-      <div className="flex flex-wrap justify-center gap-6 mb-10">
-        <ProgressCircle label="Open" current={countOpen} total={totalTickets} color="#3617a7ff" />
-        <ProgressCircle label="In Progress" current={countInProgress} total={totalTickets} color="#3617a7ff" />
-        <ProgressCircle label="Resolved" current={countResolved} total={totalTickets} color="#3617a7ff" />
-        <ProgressCircle label="Unresolved" current={countUnresolved} total={totalTickets} color="#3617a7ff" />
-      </div>
-
-      {/* Controls */}
-      <div className="flex justify-between items-center mb-3">
-        <div className="inline-flex items-center gap-2 border rounded-md px-3 py-2 bg-white shadow-sm">
-          <label htmlFor="entries" className="text-sm">Show</label>
-          <select
-            id="entries"
-            value={entriesToShow}
-            onChange={(e) => setEntriesToShow(Number(e.target.value))}
-            className="border rounded px-2 py-1 text-sm focus:ring-2 focus:ring-blue-500"
-          >
-            <option value={5}>5</option>
-            <option value={10}>10</option>
-            <option value={totalTickets}>All</option>
-          </select>
-          <span className="text-sm">entries</span>
+      {/* ✅ Donut (Progress) + Line Chart Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
+        {/* Donut Charts (2×2 grid) */}
+        <div className="grid grid-cols-2 gap-6">
+          <ProgressCircle label="Open" current={countOpen} total={totalTickets} color="#3617a7ff" />
+          <ProgressCircle label="In Progress" current={countInProgress} total={totalTickets} color="#3617a7ff" />
+          <ProgressCircle label="Resolved" current={countResolved} total={totalTickets} color="#3617a7ff" />
+          <ProgressCircle label="Unresolved" current={countUnresolved} total={totalTickets} color="#3617a7ff" />
         </div>
 
-        <div className="inline-flex items-center border rounded-md px-3 py-2 shadow-sm">
-          <input
-            type="text"
-            placeholder="Search by title..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="px-2 py-1 text-sm focus:ring-2 focus:ring-gray-400"
-          />
+        {/* Line Chart (span 2 cols) */}
+        <div className="lg:col-span-2 bg-indigo-950 rounded-lg shadow-md p-4">
+          <ReactApexChart options={chartOptions} series={chartSeries} type="line" height={300} />
         </div>
       </div>
 
