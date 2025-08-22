@@ -25,7 +25,7 @@ const Dashboard: React.FC = () => {
     key: keyof Ticket;
     direction: "asc" | "desc" | null;
   }>({ key: "type", direction: null });
-  const [entriesToShow, setEntriesToShow] = useState<number>(5);
+  const [entriesToShow, setEntriesToShow] = useState<number | "All">(5);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [openMenuId, setOpenMenuId] = useState<number | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -184,6 +184,12 @@ const Dashboard: React.FC = () => {
     },
   ];
 
+  // ✅ Compute displayed tickets (with "All")
+  const displayedTickets =
+    entriesToShow === "All"
+      ? filteredTickets
+      : filteredTickets.slice(0, entriesToShow);
+
   return (
     <div className="bg-white min-h-screen p-8">
       <div className="flex justify-between items-center mb-10">
@@ -212,9 +218,41 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
+      {/* ✅ Controls: Show Entries + Search */}
+      <div className="flex justify-between items-center mb-4">
+        {/* Show Entries */}
+        <div className="flex items-center space-x-2 ">
+          <label className="text-sm text-gray-600">Show</label>
+          <select
+            value={entriesToShow}
+            onChange={(e) =>
+              setEntriesToShow(e.target.value === "All" ? "All" : Number(e.target.value))
+            }
+            className="border rounded px-2 py-1"
+          >
+            <option value={5}>5</option>
+            <option value={10}>10</option>
+            <option value={15}>15</option>
+            <option value="All">All</option>
+          </select>
+          <span className="text-sm text-gray-600">entries</span>
+        </div>
+
+        {/* Search */}
+        <div>
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search by title..."
+            className="border rounded px-3 py-1"
+          />
+        </div>
+      </div>
+
       {/* Table */}
       <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-        <div className={`overflow-y-auto ${filteredTickets.length > 5 ? "max-h-96" : ""}`}>
+        <div className={`overflow-y-auto ${displayedTickets.length > 5 ? "max-h-96" : ""}`}>
           <table className="w-full text-sm text-left">
             <thead className="bg-blue-200 text-xs uppercase sticky top-0">
               <tr>
@@ -235,7 +273,7 @@ const Dashboard: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredTickets.slice(0, entriesToShow).map((t) => (
+              {displayedTickets.map((t) => (
                 <tr key={t.id} className="border-b hover:bg-gray-50">
                   <td className="px-6 py-4">{t.id}</td>
                   <td className="px-6 py-4">{t.type}</td>
