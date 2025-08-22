@@ -105,3 +105,13 @@ class TicketResponse(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+
+class TicketUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    type: Optional[str] = None
+    category: Optional[str] = None
+    priority: Optional[str] = None
+    status: Optional[str] = None

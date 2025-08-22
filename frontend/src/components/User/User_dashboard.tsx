@@ -3,13 +3,18 @@ import {
   ChevronUpIcon,
   ChevronDownIcon,
   ArrowsUpDownIcon,
+  PencilIcon,
+  TrashIcon,
 } from "@heroicons/react/24/solid";
-import { getTickets, type Ticket } from "../../api";
+import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
+import {
+  getTickets,
+  type Ticket,
+  updateTicket,
+  deleteTicket,
+} from "../../api";
 import ProgressCircle from "../progressCircle";
 import { useNavigate } from "react-router-dom";
-
-
- 
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -20,6 +25,9 @@ const Dashboard: React.FC = () => {
   }>({ key: "type", direction: null });
   const [entriesToShow, setEntriesToShow] = useState<number>(5);
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [openMenuId, setOpenMenuId] = useState<number | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
 
   // ✅ Fetch tickets
   useEffect(() => {
@@ -36,6 +44,12 @@ const Dashboard: React.FC = () => {
     fetchTickets();
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = () => setOpenMenuId(null);
+    window.addEventListener("click", handleClickOutside);
+    return () => window.removeEventListener("click", handleClickOutside);
+  }, []);
+
   // ✅ Sorting helper
   const handleSort = (key: keyof Ticket) => {
     let direction: "asc" | "desc" | null = "asc";
@@ -44,43 +58,69 @@ const Dashboard: React.FC = () => {
     setSortConfig({ key, direction });
   };
 
- // ✅ Memoized filtered + sorted tickets
-const filteredTickets = useMemo(() => {
-  let result = tickets.filter((t) =>
-    t.title?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // ✅ Delete ticket
+  const handleDelete = async (id: number) => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+    try {
+      await deleteTicket(id, token);
+      setTickets((prev) => prev.filter((t) => t.id !== id));
+      setOpenMenuId(null);
+    } catch (error) {
+      console.error("Error deleting ticket:", error);
+    }
+  };
 
-  
-  if (sortConfig.direction) {
-    result = [...result].sort((a, b) => {
-      const { key, direction } = sortConfig;
+  // ✅ Edit ticket (open modal)
+  const handleEdit = (ticket: Ticket) => {
+    setSelectedTicket(ticket);
+    setIsEditModalOpen(true);
+    setOpenMenuId(null);
+  };
 
-      
-      if (key === "priority") {
-        const priorityOrder: Record<string, number> = { Low: 1, Medium: 2, High: 3 };
-        return direction === "asc"
-          ? (priorityOrder[a.priority] ?? 0) - (priorityOrder[b.priority] ?? 0)
-          : (priorityOrder[b.priority] ?? 0) - (priorityOrder[a.priority] ?? 0);
-      }
+  const handleUpdate = async () => {
+    if (!selectedTicket) return;
+    const token = localStorage.getItem("token");
+    if (!token) return;
+    try {
+      const updated = await updateTicket(selectedTicket.id, selectedTicket, token);
+      setTickets((prev) => prev.map((t) => (t.id === updated.id ? updated : t)));
+      setIsEditModalOpen(false);
+    } catch (error) {
+      console.error("Error updating ticket:", error);
+    }
+  };
 
-      const aVal = a[key] ?? "";
-      const bVal = b[key] ?? "";
+  // ✅ Memoized filtered + sorted tickets
+  const filteredTickets = useMemo(() => {
+    let result = tickets.filter((t) =>
+      t.title?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
-      if (aVal > bVal) {
-        return direction === "asc" ? 1 : -1;
-      }
-      if (aVal < bVal) {
-        return direction === "asc" ? -1 : 1;
-      }
-      return 0;
-    });
-  }
+    if (sortConfig.direction) {
+      result = [...result].sort((a, b) => {
+        const { key, direction } = sortConfig;
 
-  return result;
-}, [tickets, searchTerm, sortConfig]);
+        if (key === "priority") {
+          const priorityOrder: Record<string, number> = { Low: 1, Medium: 2, High: 3 };
+          return direction === "asc"
+            ? (priorityOrder[a.priority] ?? 0) - (priorityOrder[b.priority] ?? 0)
+            : (priorityOrder[b.priority] ?? 0) - (priorityOrder[a.priority] ?? 0);
+        }
 
+        const aVal = a[key] ?? "";
+        const bVal = b[key] ?? "";
 
-  // ✅ Precompute ticket counts in ONE loop
+        if (aVal > bVal) return direction === "asc" ? 1 : -1;
+        if (aVal < bVal) return direction === "asc" ? -1 : 1;
+        return 0;
+      });
+    }
+
+    return result;
+  }, [tickets, searchTerm, sortConfig]);
+
+  // ✅ Precompute ticket counts
   const { countOpen, countInProgress, countResolved, countUnresolved } = useMemo(() => {
     let open = 0, inProgress = 0, resolved = 0, unresolved = 0;
     tickets.forEach((t) => {
@@ -92,7 +132,6 @@ const filteredTickets = useMemo(() => {
     return { countOpen: open, countInProgress: inProgress, countResolved: resolved, countUnresolved: unresolved };
   }, [tickets]);
 
-  // ✅ Sort icon renderer
   const renderSortIcon = (column: keyof Ticket) => {
     if (sortConfig.key !== column || sortConfig.direction === null)
       return <ArrowsUpDownIcon className="w-4 h-4 text-black" />;
@@ -105,20 +144,15 @@ const filteredTickets = useMemo(() => {
 
   return (
     <div className="bg-white min-h-screen p-8">
-       <div className="flex justify-between items-center mb-10">
-      <h1 className="text-4xl font-bold text-black drop-shadow">
-        Ticket Dashboard
-      </h1>
-
-      <button
-        onClick={() => navigate("/raise-ticket")}
-        className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-lg shadow-lg transition"
-      >
-        <span className="text-xl">＋</span> Create Ticket
-      </button>
-    </div>
-
-
+      <div className="flex justify-between items-center mb-10">
+        <h1 className="text-4xl font-bold text-black drop-shadow">Ticket Dashboard</h1>
+        <button
+          onClick={() => navigate("/raise-ticket")}
+          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-lg shadow-lg transition"
+        >
+          <span className="text-xl">＋</span> Create Ticket
+        </button>
+      </div>
 
       {/* Charts */}
       <div className="flex flex-wrap justify-center gap-6 mb-10">
@@ -130,7 +164,6 @@ const filteredTickets = useMemo(() => {
 
       {/* Controls */}
       <div className="flex justify-between items-center mb-3">
-        {/* Show Entries */}
         <div className="inline-flex items-center gap-2 border rounded-md px-3 py-2 bg-white shadow-sm">
           <label htmlFor="entries" className="text-sm">Show</label>
           <select
@@ -146,7 +179,6 @@ const filteredTickets = useMemo(() => {
           <span className="text-sm">entries</span>
         </div>
 
-        {/* Search */}
         <div className="inline-flex items-center border rounded-md px-3 py-2 shadow-sm">
           <input
             type="text"
@@ -177,6 +209,7 @@ const filteredTickets = useMemo(() => {
                   <span className="inline-flex items-center gap-1">Status {renderSortIcon("status")}</span>
                 </th>
                 <th className="px-6 py-3">Agent Response</th>
+                <th className="px-6 py-3 text-right">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -187,27 +220,110 @@ const filteredTickets = useMemo(() => {
                   <td className="px-6 py-4 font-medium">{t.title}</td>
                   <td className="px-6 py-4">{t.description}</td>
                   <td className="px-6 py-4">
-                    <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                      t.priority === "High" ? "bg-red-100 text-red-700"
-                      : t.priority === "Medium" ? "bg-yellow-100 text-yellow-700"
-                      : "bg-green-100 text-green-700"
-                    }`}>{t.priority}</span>
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                        t.priority === "High"
+                          ? "bg-red-100 text-red-700"
+                          : t.priority === "Medium"
+                          ? "bg-yellow-100 text-yellow-700"
+                          : "bg-green-100 text-green-700"
+                      }`}
+                    >
+                      {t.priority}
+                    </span>
                   </td>
                   <td className="px-6 py-4">
-                    <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                      ["Resolved", "Closed"].includes(t.status) ? "bg-green-100 text-green-700"
-                      : t.status === "In Progress" ? "bg-blue-100 text-blue-700"
-                      : t.status === "Not Resolved" ? "bg-red-100 text-red-700"
-                      : "bg-gray-100 text-gray-700"
-                    }`}>{t.status}</span>
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                        ["Resolved", "Closed"].includes(t.status)
+                          ? "bg-green-100 text-green-700"
+                          : t.status === "In Progress"
+                          ? "bg-blue-100 text-blue-700"
+                          : t.status === "Not Resolved"
+                          ? "bg-red-100 text-red-700"
+                          : "bg-gray-100 text-gray-700"
+                      }`}
+                    >
+                      {t.status}
+                    </span>
                   </td>
                   <td className="px-6 py-4">{t.agentResponse}</td>
+                  <td className="px-6 py-4 text-right relative">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setOpenMenuId(openMenuId === t.id ? null : t.id);
+                      }}
+                      className="p-2 rounded-full hover:bg-gray-100"
+                    >
+                      <EllipsisVerticalIcon className="h-5 w-5 text-gray-600" />
+                    </button>
+                    {openMenuId === t.id && (
+                      <div
+                        className="absolute right-0 mt-2 w-32 bg-white border rounded shadow-lg z-10"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <button
+                          onClick={() => handleEdit(t)}
+                          className="w-full flex items-center gap-2 px-4 py-2 hover:bg-gray-100"
+                        >
+                          <PencilIcon className="h-4 w-4 text-gray-600" /> Edit
+                        </button>
+                        <button
+                          onClick={() => handleDelete(t.id)}
+                          className="w-full flex items-center gap-2 px-4 py-2 hover:bg-gray-100 text-red-500"
+                        >
+                          <TrashIcon className="h-4 w-4" /> Delete
+                        </button>
+                      </div>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       </div>
+
+      {/* ✅ Edit Modal */}
+      {isEditModalOpen && selectedTicket && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-20">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+            <h2 className="text-xl font-bold mb-4">Edit Ticket</h2>
+            <input
+              type="text"
+              value={selectedTicket.title}
+              onChange={(e) =>
+                setSelectedTicket({ ...selectedTicket, title: e.target.value })
+              }
+              className="w-full mb-3 px-3 py-2 border rounded"
+              placeholder="Title"
+            />
+            <textarea
+              value={selectedTicket.description}
+              onChange={(e) =>
+                setSelectedTicket({ ...selectedTicket, description: e.target.value })
+              }
+              className="w-full mb-3 px-3 py-2 border rounded"
+              placeholder="Description"
+            />
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => setIsEditModalOpen(false)}
+                className="px-4 py-2 rounded bg-gray-300"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleUpdate}
+                className="px-4 py-2 rounded bg-blue-600 text-white"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

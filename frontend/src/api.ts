@@ -40,7 +40,6 @@ export const loginUser = async (data: LoginData): Promise<TokenResponse> => {
   return response.data;
 };
 
-// Ticket creation API (fixed for file upload + error logging)
 // Ticket creation API (JSON version, no files)
 export const createTicket = async (
   token: string,
@@ -96,6 +95,26 @@ export interface Ticket {
 
 export const getTickets = async (token: string): Promise<Ticket[]> => {
   const response = await axios.get(`${API_URL}/tickets/`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
+
+
+export const updateTicket = async (ticketId: number, updatedData: any, token: string) => {
+  const response = await axios.put(`${API_URL}/tickets/${ticketId}`, updatedData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
+
+// Delete Ticket
+export const deleteTicket = async (ticketId: number, token: string) => {
+  const response = await axios.delete(`${API_URL}/tickets/${ticketId}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
