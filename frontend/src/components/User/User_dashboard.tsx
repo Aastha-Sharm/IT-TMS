@@ -155,6 +155,7 @@ const Dashboard: React.FC = () => {
     stroke: {
       curve: "smooth",
       width: [4],
+      colors: ["#ffffff"],
     },
     grid: {
       borderColor: "#7a7d81ff",
@@ -206,7 +207,7 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* Line Chart (span 2 cols) */}
-        <div className="lg:col-span-2 bg-indigo-950 rounded-lg shadow-md p-4">
+        <div className="lg:col-span-2 bg-gradient-to-r from-indigo-950 to-teal-600 rounded-lg shadow-md p-4">
           <ReactApexChart options={chartOptions} series={chartSeries} type="line" height={300} />
         </div>
       </div>
