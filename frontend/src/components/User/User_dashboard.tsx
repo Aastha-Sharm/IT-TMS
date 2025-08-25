@@ -253,92 +253,94 @@ const Dashboard: React.FC = () => {
         <div className={`overflow-y-auto ${displayedTickets.length > 5 ? "max-h-96" : ""}`}>
           <table className="w-full text-sm text-left">
             <thead className="bg-blue-200 text-xs uppercase sticky top-0">
-              <tr>
-                <th className="px-6 py-3">ID</th> {/* Always sorted ASC by default */}
-                <th className="px-6 py-3 cursor-pointer" onClick={() => handleSort("type")}>
-                  <span className="inline-flex items-center gap-1">Type {renderSortIcon("type")}</span>
-                </th>
-                <th className="px-6 py-3">Title</th>
-                <th className="px-6 py-3">Description</th>
-                <th className="px-6 py-3 cursor-pointer" onClick={() => handleSort("priority")}>
-                  <span className="inline-flex items-center gap-1">Priority {renderSortIcon("priority")}</span>
-                </th>
-                <th className="px-6 py-3 cursor-pointer" onClick={() => handleSort("status")}>
-                  <span className="inline-flex items-center gap-1">Status {renderSortIcon("status")}</span>
-                </th>
-                <th className="px-6 py-3">Agent Response</th>
-                <th className="px-6 py-3 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {displayedTickets.map((t) => (
-                <tr key={t.id} className="border-b hover:bg-gray-50">
-                  <td className="px-6 py-4">{t.id}</td>
-                  <td className="px-6 py-4">{t.type}</td>
-                  <td className="px-6 py-4 font-medium">{t.title}</td>
-                  <td className="px-6 py-4">{t.description}</td>
-                  <td className="px-6 py-4">
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                        t.priority === "High"
-                          ? "bg-red-100 text-red-700"
-                          : t.priority === "Medium"
-                          ? "bg-yellow-100 text-yellow-700"
-                          : "bg-green-100 text-green-700"
-                      }`}
+            <tr>
+              <th className="px-6 py-3">ID</th>
+              <th className="px-6 py-3 cursor-pointer" onClick={() => handleSort("type")}>
+                <span className="inline-flex items-center gap-1">Type {renderSortIcon("type")}</span>
+              </th>
+              <th className="px-6 py-3">Title</th>
+              <th className="px-6 py-3">Description</th>
+              <th className="px-6 py-3 cursor-pointer" onClick={() => handleSort("priority")}>
+                <span className="inline-flex items-center gap-1">Priority {renderSortIcon("priority")}</span>
+              </th>
+              <th className="px-6 py-3 cursor-pointer" onClick={() => handleSort("status")}>
+                <span className="inline-flex items-center gap-1">Status {renderSortIcon("status")}</span>
+              </th>
+              <th className="px-6 py-3">Agent Response</th>
+              <th className="px-6 py-3 text-right">Actions</th>
+            </tr>
+          </thead>
+
+                      <tbody>
+            {displayedTickets.map((t) => (
+              <tr key={t.id} className="border-b hover:bg-gray-50">
+                <td className="px-6 py-4">{t.id}</td>
+                <td className="px-6 py-4">{t.type}</td>
+                <td className="px-6 py-4 font-medium">{t.title}</td>
+                <td className="px-6 py-4">{t.description}</td>
+                <td className="px-6 py-4">
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                      t.priority === "High"
+                        ? "bg-red-100 text-red-700"
+                        : t.priority === "Medium"
+                        ? "bg-yellow-100 text-yellow-700"
+                        : "bg-green-100 text-green-700"
+                    }`}
+                  >
+                    {t.priority}
+                  </span>
+                </td>
+                <td className="px-6 py-4">
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                      ["Resolved", "Closed"].includes(t.status)
+                        ? "bg-green-100 text-green-700"
+                        : t.status === "In Progress"
+                        ? "bg-blue-100 text-blue-700"
+                        : t.status === "Not Resolved"
+                        ? "bg-red-100 text-red-700"
+                        : "bg-gray-100 text-gray-700"
+                    }`}
+                  >
+                    {t.status}
+                  </span>
+                </td>
+                <td className="px-6 py-4">{t.agentResponse}</td>
+                <td className="px-6 py-4 text-right relative">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setOpenMenuId(openMenuId === t.id ? null : t.id);
+                    }}
+                    className="p-2 rounded-full hover:bg-gray-100"
+                  >
+                    <EllipsisVerticalIcon className="h-5 w-5 text-gray-600" />
+                  </button>
+                  {openMenuId === t.id && (
+                    <div
+                      className="absolute right-0 mt-2 w-32 bg-white border rounded shadow-lg z-10"
+                      onClick={(e) => e.stopPropagation()}
                     >
-                      {t.priority}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                        ["Resolved", "Closed"].includes(t.status)
-                          ? "bg-green-100 text-green-700"
-                          : t.status === "In Progress"
-                          ? "bg-blue-100 text-blue-700"
-                          : t.status === "Not Resolved"
-                          ? "bg-red-100 text-red-700"
-                          : "bg-gray-100 text-gray-700"
-                      }`}
-                    >
-                      {t.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">{t.agentResponse}</td>
-                  <td className="px-6 py-4 text-right relative">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setOpenMenuId(openMenuId === t.id ? null : t.id);
-                      }}
-                      className="p-2 rounded-full hover:bg-gray-100"
-                    >
-                      <EllipsisVerticalIcon className="h-5 w-5 text-gray-600" />
-                    </button>
-                    {openMenuId === t.id && (
-                      <div
-                        className="absolute right-0 mt-2 w-32 bg-white border rounded shadow-lg z-10"
-                        onClick={(e) => e.stopPropagation()}
+                      <button
+                        onClick={() => handleEdit(t)}
+                        className="w-full flex items-center gap-2 px-4 py-2 hover:bg-gray-100"
                       >
-                        <button
-                          onClick={() => handleEdit(t)}
-                          className="w-full flex items-center gap-2 px-4 py-2 hover:bg-gray-100"
-                        >
-                          <PencilIcon className="h-4 w-4 text-gray-600" /> Edit
-                        </button>
-                        <button
-                          onClick={() => handleDelete(t.id)}
-                          className="w-full flex items-center gap-2 px-4 py-2 hover:bg-gray-100 text-red-500"
-                        >
-                          <TrashIcon className="h-4 w-4" /> Delete
-                        </button>
-                      </div>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
+                        <PencilIcon className="h-4 w-4 text-gray-600" /> Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(t.id)}
+                        className="w-full flex items-center gap-2 px-4 py-2 hover:bg-gray-100 text-red-500"
+                      >
+                        <TrashIcon className="h-4 w-4" /> Delete
+                      </button>
+                    </div>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+
           </table>
         </div>
       </div>
