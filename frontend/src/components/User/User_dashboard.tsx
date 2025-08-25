@@ -142,8 +142,8 @@ const Dashboard: React.FC = () => {
     if (sortConfig.key !== column || sortConfig.direction === null)
       return <ArrowsUpDownIcon className="w-4 h-4 text-black" />;
     return sortConfig.direction === "asc"
-      ? <ChevronUpIcon className="w-4 h-4 text-gray-500" />
-      : <ChevronDownIcon className="w-4 h-4 text-gray-500" />;
+      ? <ChevronUpIcon className="w-4 h-4 text-blue-500" />
+      : <ChevronDownIcon className="w-4 h-4 text-blue-500" />;
   };
 
   const totalTickets = tickets.length;
