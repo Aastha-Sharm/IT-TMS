@@ -24,7 +24,7 @@ const Dashboard: React.FC = () => {
   const [sortConfig, setSortConfig] = useState<{
     key: keyof Ticket;
     direction: "asc" | "desc" | null;
-  }>({ key: "type", direction: null });
+  }>({ key: "id", direction: null }); // 🔹 set default key to "id"
   const [entriesToShow, setEntriesToShow] = useState<number | "All">(5);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [openMenuId, setOpenMenuId] = useState<number | null>(null);
@@ -99,7 +99,11 @@ const Dashboard: React.FC = () => {
       t.title?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    if (sortConfig.direction) {
+    // 🔹 Always sort by ID ascending first
+    result = [...result].sort((a, b) => a.id - b.id);
+
+    // 🔹 Apply user-selected sorting (if active)
+    if (sortConfig.direction && sortConfig.key !== "id") {
       result = [...result].sort((a, b) => {
         const { key, direction } = sortConfig;
 
@@ -144,7 +148,7 @@ const Dashboard: React.FC = () => {
 
   const totalTickets = tickets.length;
 
-  // ✅ ApexCharts Config (Line chart now uses ticket counts)
+  // ✅ ApexCharts Config
   const chartOptions: ApexOptions = {
     chart: {
       type: "line",
@@ -202,25 +206,21 @@ const Dashboard: React.FC = () => {
         </button>
       </div>
 
-      {/* ✅ Donut (Progress) + Line Chart Section */}
+      {/* ✅ Donut + Line Chart */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
-        {/* Donut Charts (2×2 grid) */}
         <div className="grid grid-cols-2 gap-6">
           <ProgressCircle label="Open" current={countOpen} total={totalTickets} color="#3617a7ff" />
           <ProgressCircle label="In Progress" current={countInProgress} total={totalTickets} color="#3617a7ff" />
           <ProgressCircle label="Resolved" current={countResolved} total={totalTickets} color="#3617a7ff" />
           <ProgressCircle label="Unresolved" current={countUnresolved} total={totalTickets} color="#3617a7ff" />
         </div>
-
-        {/* Line Chart (span 2 cols) */}
         <div className="lg:col-span-2 bg-gradient-to-r from-indigo-950 to-teal-600 rounded-lg shadow-md p-4">
           <ReactApexChart options={chartOptions} series={chartSeries} type="line" height={300} />
         </div>
       </div>
 
-      {/* ✅ Controls: Show Entries + Search */}
+      {/* ✅ Controls */}
       <div className="flex justify-between items-center mb-4">
-        {/* Show Entries */}
         <div className="flex items-center space-x-2 ">
           <label className="text-sm text-gray-600">Show</label>
           <select
@@ -237,8 +237,6 @@ const Dashboard: React.FC = () => {
           </select>
           <span className="text-sm text-gray-600">entries</span>
         </div>
-
-        {/* Search */}
         <div>
           <input
             type="text"
@@ -250,15 +248,13 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Table */}
+      {/* ✅ Table */}
       <div className="bg-white rounded-lg shadow-lg overflow-hidden">
         <div className={`overflow-y-auto ${displayedTickets.length > 5 ? "max-h-96" : ""}`}>
           <table className="w-full text-sm text-left">
             <thead className="bg-blue-200 text-xs uppercase sticky top-0">
               <tr>
-                <th className="px-6 py-3 cursor-pointer" onClick={() => handleSort("id")}>
-                  <span className="inline-flex items-center gap-1">ID {renderSortIcon("id")}</span>
-                </th>
+                <th className="px-6 py-3">ID</th> {/* Always sorted ASC by default */}
                 <th className="px-6 py-3 cursor-pointer" onClick={() => handleSort("type")}>
                   <span className="inline-flex items-center gap-1">Type {renderSortIcon("type")}</span>
                 </th>
