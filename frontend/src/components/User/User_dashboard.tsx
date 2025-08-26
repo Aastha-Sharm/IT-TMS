@@ -1,18 +1,8 @@
 import React, { useEffect, useState, useMemo } from "react";
 import ReactApexChart from "react-apexcharts";
-import {
-  ChevronUpIcon,
-  ChevronDownIcon,
-  ArrowsUpDownIcon,
-  PencilIcon,
-  TrashIcon,
-} from "@heroicons/react/24/solid";
+import {ChevronUpIcon,ChevronDownIcon,ArrowsUpDownIcon,PencilIcon,TrashIcon} from "@heroicons/react/24/solid";
 import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
-import {
-  getTickets,
-  updateTicket,
-  deleteTicket,
-} from "../../api";
+import { getTickets, updateTicket, deleteTicket} from "../../api";
 import {type Ticket} from "../../Types/ticket";
 import ProgressCircle from "../progressCircle";
 import { useNavigate } from "react-router-dom";
@@ -200,7 +190,7 @@ const Dashboard: React.FC = () => {
         <h1 className="text-4xl font-bold text-black drop-shadow">Ticket Dashboard</h1>
         <button
           onClick={() => navigate("/raise-ticket")}
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-lg shadow-lg transition"
+          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-lg shadow-lg transition cursor-pointer"
         >
           <span className="text-xl">＋</span> Create Ticket
         </button>
@@ -319,18 +309,18 @@ const Dashboard: React.FC = () => {
                   </button>
                   {openMenuId === t.id && (
                     <div
-                      className="absolute right-0 mt-2 w-32 bg-white border rounded shadow-lg z-10"
+                      className="absolute right-0 mt-2 w-32 bg-white border-2 border-gray-400 rounded shadow-lg z-10"
                       onClick={(e) => e.stopPropagation()}
                     >
                       <button
                         onClick={() => handleEdit(t)}
-                        className="w-full flex items-center gap-2 px-4 py-2 hover:bg-gray-100"
+                        className="w-full flex items-center gap-2 px-4 py-2 hover:bg-gray-100 cursor-pointer"
                       >
                         <PencilIcon className="h-4 w-4 text-gray-600" /> Edit
                       </button>
                       <button
                         onClick={() => handleDelete(t.id)}
-                        className="w-full flex items-center gap-2 px-4 py-2 hover:bg-gray-100 text-red-500"
+                        className="w-full flex items-center gap-2 px-4 py-2 hover:bg-gray-100 text-red-500 cursor-pointer"
                       >
                         <TrashIcon className="h-4 w-4" /> Delete
                       </button>
