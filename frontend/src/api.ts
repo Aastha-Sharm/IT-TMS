@@ -1,23 +1,8 @@
 import axios from "axios";
+import { type SignupData,type LoginData,type TokenResponse } from "./Types/auth";
+import {type Ticket} from "./Types/ticket";
 
 const API_URL = "http://localhost:8000";
-
-export interface SignupData {
-  username: string;
-  email: string;
-  password: string;
-  role: string;
-}
-
-export interface LoginData {
-  email: string;
-  password: string;
-}
-
-export interface TokenResponse {
-  access_token: string;
-  token_type: string;
-}
 
 // Signup API
 export const signupUser = async (data: SignupData) => {
@@ -76,22 +61,7 @@ export const createTicket = async (
   }
 };
 
-export interface Ticket {
-  id: number;
-  type: string;
-  title: string;
-  description: string;
-  status:
-    | "Open"
-    | "Assigned"
-    | "Reopened"
-    | "In Progress"
-    | "Resolved"
-    | "Closed"
-    | "Not Resolved";
-  priority: "Low" | "Medium" | "High";
-  agentResponse: string | null;
-}
+
 
 export const getTickets = async (token: string): Promise<Ticket[]> => {
   const response = await axios.get(`${API_URL}/tickets/`, {
