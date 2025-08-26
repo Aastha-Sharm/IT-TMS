@@ -10,10 +10,10 @@ import {
 import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
 import {
   getTickets,
-  type Ticket,
   updateTicket,
   deleteTicket,
 } from "../../api";
+import {type Ticket} from "../../Types/ticket";
 import ProgressCircle from "../progressCircle";
 import { useNavigate } from "react-router-dom";
 import type { ApexOptions } from "apexcharts";
